@@ -14,7 +14,7 @@ while feedback != random_word and tries < 6:
         if guess[i] in random_word[i]:
             feedback += guess[i]
         elif guess[i] in random_word:
-            feedback += guess[i].lower()
+            feedback += guess[i].lower() # lowercase means correct letter but in wrong position
         else:
-            feedback += "X"
+            feedback += "X" # cross indicates wrong letter
     print(feedback)
