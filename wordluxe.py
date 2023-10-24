@@ -1,55 +1,63 @@
 import random
 
+
 # TODO: Re-evaluate
-easy_words = ["APPLE", "LEMON", "MELON", "PEACH", "GUAVA", "GRAPE"]
-normal_words = ["CLOUD", "BEACH", "MAPLE", "GREED", "SMILE"]
-hard_words = ["ABYSS", "PRISM", "RAVEN", "CHAOS", "CYNIC"]
-extreme_words = ["QUIRK", "XENON", "VIXEN", "OZONE", "EXALT"]
-categories = ['GENERAL', 'COUNTRIES', 'ANIMALS', 'FRUITS', 'SPORTS', 'ARTISTS', 'SONGS']
-diff_list = {1:easy_words,2:normal_words,3:hard_words,4:extreme_words}
+categories = ["general", "countries", "animals", "fruits", "sports", "artists", "songs"]
+difficulty = {
+    "easy": ["apple", "lemon", "melon", "peach", "guava", "grape"],
+    "normal": ["cloud", "beach", "maple", "greed", "smile"],
+    "hard": ["abyss", "prism", "raven", "chaos", "cynic"],
+    "extreme": ["quirk", "xenon", "vixen", "ozone", "exalt"]
+}
 
-user_input = input("Choose category: ").upper()
+user_input = input("Choose category: ")
 
-if user_input in categories:
-	print(user_input, "is chosen")
+while user_input not in categories:
+    print("Not in categories")
+    user_input = input("Choose category: ")
+
+user_input = input("Choose difficulty: ")
+
+while user_input not in difficulty:
+    print("Not in difficulties")
+    user_input = input("Choose difficulty: ")
 else:
-	print('Not in the categories.')
-
-user_input = int(input("Choose difficulty: "))
-if user_input in diff_list:
-    random_word = random.choice(diff_list[user_input])
-else:
-    print("Not available.")
+    user_input in difficulty
+    random_word = random.choice(difficulty[user_input])
 
 word_length = len(random_word)
 feedback = ""
-tries = 1
+num_guesses = 0
 currency = 0
 
-while feedback != random_word and tries < 7:
-    print("Attempt #", tries)
-    guess = input().upper()
+while feedback != random_word and num_guesses < 7:
+
+    print("Attempt #" + str(num_guesses + 1))
+    guess = input()
     feedback = ""
-    tries += 1
+    num_guesses += 1
+
     for i in range(word_length):
         if guess[i] in random_word[i]:
-            feedback += guess[i]
+            feedback += guess[i] # GREEN BOX
+        elif guess[i] in feedback:
+            feedback += "X"
         elif guess[i] in random_word:
-            feedback += guess[i].lower() # lowercase means correct letter but in wrong position
+            feedback += guess[i] # YELLOW BOX
         else:
-            feedback += "X" # cross indicates wrong letter
+            feedback += "X" # GRAY BOX
     
     #add coins
-    # TODO: Fix incrementing only 2 coins when guessed in 2 attempts
+    # Fixed bug incrementing only 2 coins when guessed in 2 attempts
     if feedback == random_word:
-        if tries <= 2:
+        if num_guesses <= 2:
             currency += 3 
-        elif tries <= 4:
+        elif num_guesses <= 4:
             currency += 2
         else:
             currency += 1
             
-    print(feedback)
+    print(feedback.upper())
     
 print("Coins:", currency)
 print("Game over")
