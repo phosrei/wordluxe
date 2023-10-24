@@ -6,6 +6,18 @@ normal_words = ["CLOUD", "BEACH", "MAPLE", "GREED", "SMILE"]
 hard_words = ["ABYSS", "PRISM", "RAVEN", "CHAOS", "CYNIC"]
 extreme_words = ["QUIRK", "XENON", "VIXEN", "OZONE", "EXALT"]
 word_list = {1:easy_words,2:normal_words,3:hard_words,4:extreme_words}
+Categories = [ 'GENERAL', 'COUNTRIES','ANIMALS','FRUITS','SPORTS','ARTISTS','SONGS']
+
+user_input = input("choose category: ").upper()
+
+if user_input in Categories:
+	print(user_input, "is chosen")
+else:
+	print('not in the categories')
+
+feedback = ""
+tries = 1
+currency = 0
 
 user_input = int(input("Choose difficulty: "))
 if user_input in word_list:
