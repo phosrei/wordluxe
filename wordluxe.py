@@ -15,10 +15,6 @@ if user_input in categories:
 else:
 	print('Not in the categories.')
 
-feedback = ""
-tries = 1
-currency = 0
-
 user_input = int(input("Choose difficulty: "))
 if user_input in diff_list:
     random_word = random.choice(diff_list[user_input])
