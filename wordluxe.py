@@ -13,7 +13,7 @@ if user_input in word_list:
 else:
     print("Not available.")
 
-word_length = 5
+word_length = len(random_word)
 feedback = ""
 tries = 1
 currency = 0
