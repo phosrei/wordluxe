@@ -1,5 +1,6 @@
 import random
 
+# TODO: Re-evaluate
 easy_words = ["APPLE", "LEMON", "MELON", "PEACH", "GUAVA", "GRAPE"]
 normal_words = ["CLOUD", "BEACH", "MAPLE", "GREED", "SMILE"]
 hard_words = ["ABYSS", "PRISM", "RAVEN", "CHAOS", "CYNIC"]
