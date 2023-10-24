@@ -6,14 +6,14 @@ normal_words = ["CLOUD", "BEACH", "MAPLE", "GREED", "SMILE"]
 hard_words = ["ABYSS", "PRISM", "RAVEN", "CHAOS", "CYNIC"]
 extreme_words = ["QUIRK", "XENON", "VIXEN", "OZONE", "EXALT"]
 word_list = {1:easy_words,2:normal_words,3:hard_words,4:extreme_words}
-Categories = [ 'GENERAL', 'COUNTRIES','ANIMALS','FRUITS','SPORTS','ARTISTS','SONGS']
+categories = ['General', 'Countries', 'Animals', 'Fruits', 'Sports', 'Artists', 'Songs']
 
 user_input = input("choose category: ").upper()
 
-if user_input in Categories:
+if user_input in categories:
 	print(user_input, "is chosen")
 else:
-	print('not in the categories')
+	print('Not in the categories.')
 
 feedback = ""
 tries = 1
