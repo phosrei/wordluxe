@@ -32,9 +32,10 @@ while feedback != random_word and tries < 7:
             feedback += "X" # cross indicates wrong letter
     
     #add coins
+    # TODO: Fix incrementing only 2 coins when guessed in 2 attempts
     if feedback == random_word:
         if tries <= 2:
-            currency += 3 # P-TODO: Fix
+            currency += 3 
         elif tries <= 4:
             currency += 2
         else:
