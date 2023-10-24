@@ -32,7 +32,7 @@ def main():
 
     while feedback != random_word and num_guesses < 7:
 
-        print(f"Attempt #" + {str(num_guesses) + 1})
+        print(f"Attempt #{str(num_guesses + 1)}")
         guess = input()
         feedback = ""
         num_guesses += 1
