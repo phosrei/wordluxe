@@ -8,7 +8,7 @@ extreme_words = ["QUIRK", "XENON", "VIXEN", "OZONE", "EXALT"]
 categories = ['GENERAL', 'COUNTRIES', 'ANIMALS', 'FRUITS', 'SPORTS', 'ARTISTS', 'SONGS']
 diff_list = {1:easy_words,2:normal_words,3:hard_words,4:extreme_words}
 
-user_input = input("choose category: ").upper()
+user_input = input("Choose category: ").upper()
 
 if user_input in categories:
 	print(user_input, "is chosen")
