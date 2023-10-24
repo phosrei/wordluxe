@@ -5,8 +5,8 @@ easy_words = ["APPLE", "LEMON", "MELON", "PEACH", "GUAVA", "GRAPE"]
 normal_words = ["CLOUD", "BEACH", "MAPLE", "GREED", "SMILE"]
 hard_words = ["ABYSS", "PRISM", "RAVEN", "CHAOS", "CYNIC"]
 extreme_words = ["QUIRK", "XENON", "VIXEN", "OZONE", "EXALT"]
-word_list = {1:easy_words,2:normal_words,3:hard_words,4:extreme_words}
 categories = ['GENERAL', 'COUNTRIES', 'ANIMALS', 'FRUITS', 'SPORTS', 'ARTISTS', 'SONGS']
+diff_list = {1:easy_words,2:normal_words,3:hard_words,4:extreme_words}
 
 user_input = input("choose category: ").upper()
 
@@ -20,8 +20,8 @@ tries = 1
 currency = 0
 
 user_input = int(input("Choose difficulty: "))
-if user_input in word_list:
-    random_word = random.choice(word_list[user_input])
+if user_input in diff_list:
+    random_word = random.choice(diff_list[user_input])
 else:
     print("Not available.")
 
