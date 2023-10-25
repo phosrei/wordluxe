@@ -1,4 +1,5 @@
 categories = ["general", "countries", "animals", "fruits", "sports", "artists", "songs"]
+
 difficulty = {
     "easy": ["here", "book", "cake", "rain", "bird", "fire", "fish", "game", "jump", "kind", "loud", "moon", "nest", "open", "park", "quit", "rest", "star", "time", "view"],
     "normal": ["apple", "beach", "chair", "dance", "early", "fence", "glass", "happy", "igloo", "jumbo", "kite", "lemon", "music", "nurse", "ocean", "piano", "quick", "river", "smile", "table"],

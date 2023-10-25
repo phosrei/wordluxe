@@ -6,12 +6,11 @@ from wordbank import categories, difficulty
 dictionary = set(words.words())
 
 cat_input = input("Choose category: ")
+dif_input = input("Choose difficulty: ")
 
 while cat_input not in categories:
     print("Not in categories")
     cat_input = input("Choose category: ")
-
-dif_input = input("Choose difficulty: ")
 
 while dif_input not in difficulty:
     print("Not in difficulties")
@@ -19,13 +18,16 @@ while dif_input not in difficulty:
 
 random_word = random.choice(difficulty[dif_input])
 word_length = len(random_word)
+
 currency = 0
 msg = ""
 
 for attempt in range(1,7):
+
     print(f"Attempt #{attempt}")
     guess = input()
     feedback = ""
+    
     while guess.lower() not in dictionary:
         print(f"'{guess}' is not in the English dictionary.")
         guess = input()
