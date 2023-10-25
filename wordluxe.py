@@ -2,6 +2,7 @@ import random
 from nltk.corpus import words
 from termcolor import colored
 
+dictionary = set(words.words())
 categories = ["general", "countries", "animals", "fruits", "sports", "artists", "songs"]
 difficulty = {
     "easy": ["here", "book", "cake", "rain", "bird", "fire", "fish", "game", "jump", "kind", "loud", "moon", "nest", "open", "park", "quit", "rest", "star", "time", "view"],
