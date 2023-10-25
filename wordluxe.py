@@ -25,15 +25,12 @@ while user_input not in difficulty:
 
 random_word = random.choice(difficulty[user_input])
 word_length = len(random_word)
-num_guesses = 0
 currency = 0
 msg = ""
 
-for attempt in range(6):
-    print(attempt)
-    print(f"Attempt #{str(num_guesses + 1)}")
+for attempt in range(1,7):
+    print(f"Attempt #{attempt}")
     guess = input()
-    num_guesses += 1
     feedback = ""
     while guess.lower() not in dictionary:
         print(f"'{guess}' is not in the English dictionary.")
@@ -54,9 +51,9 @@ for attempt in range(6):
     #add coins
     if guess == random_word:
         msg = "You won!"
-        if num_guesses <= 2:
+        if attempt <= 2:
             currency += 3 
-        elif num_guesses <= 4:
+        elif attempt <= 4:
             currency += 2
         else:
             currency += 1
