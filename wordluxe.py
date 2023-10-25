@@ -52,7 +52,6 @@ while feedback != random_word and num_guesses < 6:
             feedback += "X" # GRAY BOX
     
     #add coins
-    # Fixed bug incrementing only 2 coins when guessed in 2 attempts
     if feedback == random_word:
         if num_guesses <= 2:
             currency += 3 
