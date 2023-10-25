@@ -1,4 +1,3 @@
-import nltk
 import random
 from nltk.corpus import words
 
