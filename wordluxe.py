@@ -32,6 +32,7 @@ for attempt in range(1,7):
     print(f"Attempt #{attempt}")
     guess = input()
     feedback = ""
+
     while guess.lower() not in dictionary:
         print(f"'{guess}' is not in the English dictionary.")
         guess = input()
