@@ -1,4 +1,5 @@
 import random
+from termcolor import colored
 
 categories = ["general", "countries", "animals", "fruits", "sports", "artists", "songs"]
 difficulty = {
@@ -22,39 +23,37 @@ while user_input not in difficulty:
 
 random_word = random.choice(difficulty[user_input])
 word_length = len(random_word)
-feedback = ""
 num_guesses = 0
 currency = 0
 
-while feedback != random_word and num_guesses < 6:
-
+for attempt in range(6):
     print(f"Attempt #{str(num_guesses + 1)}")
     guess = input()
-    feedback = ""
     num_guesses += 1
-
+    feedback = ""
+    
     # TODO: Append letter in a list instead to improve performance and remove checking redundancy
     for i in range(word_length):
         if guess[i] in random_word[i]:
-            feedback += guess[i] # GREEN BOX
+            feedback += colored(guess[i], 'green')
         elif guess[i] in feedback:
-            feedback += "X"
+            feedback += colored(guess[i], 'light_grey')
         elif guess[i] in random_word:
-            feedback += guess[i] # YELLOW BOX
+            feedback += colored(guess[i], 'yellow')
         else:
-            feedback += "X" # GRAY BOX
+            feedback += colored(guess[i], 'light_grey')
     
+    print(feedback)
     #add coins
     # Fixed bug incrementing only 2 coins when guessed in 2 attempts
-    if feedback == random_word:
+    if guess == random_word:
         if num_guesses <= 2:
             currency += 3 
         elif num_guesses <= 4:
             currency += 2
         else:
             currency += 1
-            
-    print(feedback.upper())
+        break
     
 print("Coins:", currency)
 print("Game over")
