@@ -1,4 +1,5 @@
 import random
+import time 
 from nltk.corpus import words
 from termcolor import colored
 from wordbank import categories, difficulty
@@ -133,6 +134,8 @@ def extreme_mode():
         guess = input()
         feedback = ""
         currency = 0
+        time.sleep(180) 
+        print("TIME'S UP!") 
         while guess.lower() not in dictionary:
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
