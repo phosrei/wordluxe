@@ -42,13 +42,13 @@ for attempt in range(6):
         if guess[i] in random_word[i]:
             feedback += colored(guess[i], 'green')
         elif guess[i] in feedback:
-            feedback += colored(guess[i], 'light_grey')
+            feedback += colored(guess[i], 'dark_grey')
         elif guess[i] in random_word:
             feedback += colored(guess[i], 'yellow')
         else:
-            feedback += colored(guess[i], 'light_grey')
+            feedback += colored(guess[i], 'dark_grey')
     
-    print(feedback.upper())
+    print(feedback)
     #add coins
     if feedback == random_word:
         if num_guesses <= 2:
