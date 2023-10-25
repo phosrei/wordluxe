@@ -47,7 +47,7 @@ for attempt in range(6):
         else:
             feedback += colored(guess[i], 'light_grey')
     
-    print(feedback)
+    print(feedback.upper())
     #add coins
     if feedback == random_word:
         if num_guesses <= 2:
