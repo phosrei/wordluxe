@@ -50,7 +50,7 @@ for attempt in range(6):
     
     print(feedback)
     #add coins
-    if feedback == random_word:
+    if guess == random_word:
         if num_guesses <= 2:
             currency += 3 
         elif num_guesses <= 4:
