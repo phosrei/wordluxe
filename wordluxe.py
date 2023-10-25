@@ -11,19 +11,19 @@ difficulty = {
     "extreme": ["chicken", "musical", "capital", "journey", "freedom", "unknown", "honesty", "victory", "holiday", "history", "hydrate", "illegal", "silence", "justify", "monster", "breathe", "perfect", "nuclear", "quality", "society"]
 }
 
-user_input = input("Choose category: ")
+cat_input = input("Choose category: ")
 
-while user_input not in categories:
+while cat_input not in categories:
     print("Not in categories")
-    user_input = input("Choose category: ")
+    cat_input = input("Choose category: ")
 
-user_input = input("Choose difficulty: ")
+dif_input = input("Choose difficulty: ")
 
-while user_input not in difficulty:
+while dif_input not in difficulty:
     print("Not in difficulties")
-    user_input = input("Choose difficulty: ")
+    dif_input = input("Choose difficulty: ")
 
-random_word = random.choice(difficulty[user_input])
+random_word = random.choice(difficulty[dif_input])
 word_length = len(random_word)
 currency = 0
 msg = ""
@@ -63,5 +63,5 @@ for attempt in range(1,7):
         print(f"The word was: {random_word}")
         break
     
-print("Coins:", currency)
+print(f"Coins: {currency}")
 print(msg)
