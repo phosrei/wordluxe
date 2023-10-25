@@ -1,5 +1,8 @@
+import nltk
 import random
+from nltk.corpus import words
 
+dictionary = set(words.words())
 categories = ["general", "countries", "animals", "fruits", "sports", "artists", "songs"]
 difficulty = {
     "easy": ["here", "book", "cake", "rain", "bird", "fire", "fish", "game", "jump", "kind", "loud", "moon", "nest", "open", "park", "quit", "rest", "star", "time", "view"],
@@ -32,6 +35,10 @@ while feedback != random_word and num_guesses < 6:
     guess = input()
     feedback = ""
     num_guesses += 1
+
+    while guess.lower() not in dictionary:
+        print(guess, "is not in the dictionary.")
+        guess = input()
 
     # TODO: Append letter in a list instead to improve performance and remove checking redundancy
     for i in range(word_length):
