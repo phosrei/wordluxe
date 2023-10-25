@@ -1,4 +1,5 @@
 import random
+from nltk.corpus import words
 from termcolor import colored
 
 categories = ["general", "countries", "animals", "fruits", "sports", "artists", "songs"]
@@ -6,7 +7,7 @@ difficulty = {
     "easy": ["here", "book", "cake", "rain", "bird", "fire", "fish", "game", "jump", "kind", "loud", "moon", "nest", "open", "park", "quit", "rest", "star", "time", "view"],
     "normal": ["apple", "beach", "chair", "dance", "early", "fence", "glass", "happy", "igloo", "jumbo", "kite", "lemon", "music", "nurse", "ocean", "piano", "quick", "river", "smile", "table"],
     "hard": ["bright", "yellow", "purple", "hidden", "flavor", "dinner", "banana", "turtle", "puzzle", "rabbit", "guitar", "purple", "floral", "market", "window", "summer", "people", "planet", "friend", "invent"],
-    "extreme": ["chicken", "musical", "capital", "journey", "freedom", "guitar", "honesty", "victory", "holiday", "history", "hydrate", "illegal", "silence", "justify", "monster", "breathe", "perfect", "nuclear", "quality", "society"]
+    "extreme": ["chicken", "musical", "capital", "journey", "freedom", "unknown", "honesty", "victory", "holiday", "history", "hydrate", "illegal", "silence", "justify", "monster", "breathe", "perfect", "nuclear", "quality", "society"]
 }
 
 user_input = input("Choose category: ")
@@ -31,7 +32,10 @@ for attempt in range(6):
     guess = input()
     num_guesses += 1
     feedback = ""
-    
+    while guess.lower() not in dictionary:
+        print(guess, "is not in the dictionary.")
+        guess = input()
+
     # TODO: Append letter in a list instead to improve performance and remove checking redundancy
     for i in range(word_length):
         if guess[i] in random_word[i]:
@@ -45,8 +49,7 @@ for attempt in range(6):
     
     print(feedback)
     #add coins
-    # Fixed bug incrementing only 2 coins when guessed in 2 attempts
-    if guess == random_word:
+    if feedback == random_word:
         if num_guesses <= 2:
             currency += 3 
         elif num_guesses <= 4:
