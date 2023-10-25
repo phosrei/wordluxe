@@ -19,10 +19,8 @@ user_input = input("Choose difficulty: ")
 while user_input not in difficulty:
     print("Not in difficulties")
     user_input = input("Choose difficulty: ")
-else:
-    user_input in difficulty
-    random_word = random.choice(difficulty[user_input])
 
+random_word = random.choice(difficulty[user_input])
 word_length = len(random_word)
 feedback = ""
 num_guesses = 0
@@ -35,6 +33,7 @@ while feedback != random_word and num_guesses < 6:
     feedback = ""
     num_guesses += 1
 
+    # TODO: Append letter in a list instead to improve performance and remove checking redundancy
     for i in range(word_length):
         if guess[i] in random_word[i]:
             feedback += guess[i] # GREEN BOX
