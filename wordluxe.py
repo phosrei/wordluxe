@@ -58,10 +58,11 @@ def play_game(word, category, max_attempts):
             msg = "Game over."
             print(f"The word was: {word}")
             break
-
+        
         attempt += 1
 
-    print(f"Coins: {currency}")
+    if max_attempts != float("inf"):
+        print(f"Coins: {currency}")
     print(msg)
 
 def check_guess(guess, word):
@@ -84,7 +85,7 @@ def check_guess(guess, word):
     return ''.join(output)
 
 def easy_mode(word, category):
-    play_game(word, category, max_attempts=1)
+    play_game(word, category, max_attempts = float("inf"))
     print("Coins: No coins are rewarded in easy mode")
 
 def normal_mode(word, category):
