@@ -110,4 +110,4 @@ def main():
     }
     game_modes[dif_input](word, cat_input)
 
-main
+main()
