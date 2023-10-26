@@ -14,23 +14,20 @@ wordbank_cat = {
     "songs": wordbank.songs_difficulty
 }
 
+# validates if input is a category and in one of the game modes
+def validate_input(prompt, valid_options):
+    while True:
+        user_input = input(prompt)
+        if user_input in valid_options:
+            return user_input
+        else:
+            print("Invalid input. Please try again.")
+
 def main():
-    global cat_input
-    cat_input = input("Choose category: ")
+    cat_input = validate_input("Choose category: ", wordbank.categories)
+    dif_input = validate_input("Choose difficulty: ", wordbank.gen_difficulty)
 
-    while cat_input not in wordbank.categories:
-        print("Not in categories")
-        cat_input = input("Choose category: ")
-        
-    global dif_input
-    dif_input = input("Choose difficulty: ")
-
-    while dif_input not in wordbank.gen_difficulty:
-        print("Not in difficulties")
-        dif_input = input("Choose difficulty: ")
-
-    if cat_input in wordbank.categories:
-        word = random.choice(wordbank_cat[cat_input][dif_input])
+    word = random.choice(wordbank_cat[cat_input][dif_input])
 
     game_modes = {
     "easy": easy_mode,
@@ -38,8 +35,9 @@ def main():
     "hard": hard_mode,
     "extreme": extreme_mode
 }
-    game_modes[dif_input](word)
+    game_modes[dif_input](word, cat_input)
 
+# check guess and assign a color based on certain conditions
 def check_guess(guess, word):
     length = len(word)
     output = ["-"] * length
@@ -59,7 +57,7 @@ def check_guess(guess, word):
 
     return ''.join(output)
 
-def easy_mode(word):
+def easy_mode(word, category):
     attempts = 1
 
     while True:
@@ -67,7 +65,7 @@ def easy_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input not in ["general", "fruits", "animals"]:
+            if category not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
@@ -82,7 +80,7 @@ def easy_mode(word):
     print(msg)
     print("Coins: No coins are rewarded in easy mode.")
 
-def normal_mode(word):
+def normal_mode(word, category):
     currency = 0
     attempt = 1
 
@@ -91,7 +89,7 @@ def normal_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input not in ["general", "fruits", "animals"]:
+            if category not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
@@ -117,7 +115,7 @@ def normal_mode(word):
     print(f"Coins: {currency}")
     print(msg)
 
-def hard_mode(word):
+def hard_mode(word, category):
     currency = 0
     attempt = 1
 
@@ -126,7 +124,7 @@ def hard_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input not in ["general", "fruits", "animals"]:
+            if category not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
@@ -150,7 +148,7 @@ def hard_mode(word):
     print(f"Coins: {currency}")
     print(msg)
 
-def extreme_mode(word):
+def extreme_mode(word, category):
     currency = 0
     attempt = 3
     
@@ -159,7 +157,7 @@ def extreme_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input not in ["general", "fruits", "animals"]:
+            if category not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
