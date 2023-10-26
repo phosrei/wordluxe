@@ -60,10 +60,10 @@ def check_guess(guess, word):
     return ''.join(output)
 
 def easy_mode(word):
-    attempts = 0
+    attempts = 1
 
     while True:
-        print(f"Attempt #{attempts + 1}")
+        print(f"Attempt #{attempts}")
         guess = input()
 
         while guess.lower() not in dictionary:
@@ -84,8 +84,9 @@ def easy_mode(word):
 
 def normal_mode(word):
     currency = 0
+    attempt = 1
 
-    for attempt in range(1,6+1):
+    while attempt <= 6:
         print(f"Attempt #{attempt}")
         guess = input()
 
@@ -94,7 +95,7 @@ def normal_mode(word):
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
-            
+
         print(check_guess(guess, word))
 
         if guess == word:
@@ -110,14 +111,17 @@ def normal_mode(word):
             msg = "Game over."
             print(f"The word was: {word}")
             break
-    
+
+        attempt += 1
+
     print(f"Coins: {currency}")
     print(msg)
 
 def hard_mode(word):
     currency = 0
+    attempt = 1
 
-    for attempt in range(1,4+1):
+    while attempt <= 4:
         print(f"Attempt #{attempt}")
         guess = input()
 
@@ -138,7 +142,7 @@ def hard_mode(word):
             else:
                 currency += 1
             break
-        elif guess != word and attempt == 6:
+        elif guess != word and attempt == 4:
             msg = "Game over."
             print(f"The word was: {word}")
             break
@@ -148,8 +152,9 @@ def hard_mode(word):
 
 def extreme_mode(word):
     currency = 0
+    attempt = 3
     
-    for attempt in range(1,3+1):
+    while attempt <= 3:
         print(f"Attempt #{attempt}")
         guess = input()
 
