@@ -17,12 +17,13 @@ wordbank_cat = {
 def main():
     global cat_input
     cat_input = input("Choose category: ")
-    global dif_input
-    dif_input = input("Choose difficulty: ")
 
     while cat_input not in wordbank.categories:
         print("Not in categories")
         cat_input = input("Choose category: ")
+        
+    global dif_input
+    dif_input = input("Choose difficulty: ")
 
     while dif_input not in wordbank.gen_difficulty:
         print("Not in difficulties")
@@ -31,14 +32,13 @@ def main():
     if cat_input in wordbank.categories:
         word = random.choice(wordbank_cat[cat_input][dif_input])
 
-    if dif_input == "easy":
-        easy_mode(word)
-    elif dif_input == "normal":
-        normal_mode(word)
-    elif dif_input == "hard":
-        hard_mode(word)
-    elif dif_input == "extreme":
-        extreme_mode(word)
+    game_modes = {
+    "easy": easy_mode,
+    "normal": normal_mode,
+    "hard": hard_mode,
+    "extreme": extreme_mode
+}
+    game_modes[dif_input](word)
 
 def check_guess(guess, word):
     length = len(word)
@@ -67,7 +67,7 @@ def easy_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input != "general" and cat_input != "fruits" and cat_input != "animals":
+            if cat_input not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
@@ -90,7 +90,7 @@ def normal_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input != "general" and cat_input != "fruits" and cat_input != "animals":
+            if cat_input not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
@@ -122,7 +122,7 @@ def hard_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input != "general" and cat_input != "fruits" and cat_input != "animals":
+            if cat_input not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
@@ -154,7 +154,7 @@ def extreme_mode(word):
         guess = input()
 
         while guess.lower() not in dictionary:
-            if cat_input != "general" and cat_input != "fruits" and cat_input != "animals":
+            if cat_input not in ["general", "fruits", "animals"]:
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
