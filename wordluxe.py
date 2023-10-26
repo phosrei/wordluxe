@@ -145,9 +145,6 @@ def hard_mode(word):
     
     print(f"Coins: {currency}")
     print(msg)
-    
-    print(f"Coins: {currency}")
-    print(msg)
 
 def extreme_mode(word):
     currency = 0
