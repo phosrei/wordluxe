@@ -15,10 +15,10 @@ wordbank_cat = {
 }
 
 # validates if input is a category and in one of the game modes
-def validate_input(prompt, valid_options):
+def validate_input(prompt, options):
     while True:
         user_input = input(prompt)
-        if user_input in valid_options:
+        if user_input in options:
             return user_input
         else:
             print("Invalid input. Please try again.")
