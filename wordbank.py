@@ -22,7 +22,7 @@ animals_difficulty = {
 }
 
 fruits_difficulty = {
-    "easy": ["plum", "kiwi", "lime", "date", "pear"],
+    "easy": ["plum", "kiwi", "lime", "date", "pear", "corn"],
     "normal": ["apple", "grape", "lemon", "melon", "peach", "guava", "mango"],
     "hard": ["banana", "cherry", "papaya", "durian", "jujube", "orange", "pomelo"],
     "extreme": ["avocado", "apricot", "coconut", "kumquat", "currant"]
