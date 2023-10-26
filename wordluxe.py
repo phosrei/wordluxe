@@ -89,13 +89,13 @@ def easy_mode(word, category):
     print("Coins: No coins are rewarded in easy mode")
 
 def normal_mode(word, category):
-    play_game(word, category, max_attempts=6)
+    play_game(word, category, max_attempts = 6)
 
 def hard_mode(word, category):
-    play_game(word, category, max_attempts=4)
+    play_game(word, category, max_attempts = 4)
 
 def extreme_mode(word, category):
-    play_game(word, category, max_attempts=3)
+    play_game(word, category, max_attempts = 3)
 
 def main():
     cat_input = validate_input("Choose category: ", wordbank.categories)
