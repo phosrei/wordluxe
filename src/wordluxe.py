@@ -4,7 +4,10 @@ from wordbank import categories
 from nltk.corpus import words
 from termcolor import colored
 
+
 dictionary = set(words.words())
+currency = 0
+
 wordbank_cat = {
     "general": categories.get("general"),
     "countries": categories.get("countries"),
@@ -15,6 +18,7 @@ wordbank_cat = {
     "songs": categories.get("songs")
 }
 
+
 def validate_input(prompt, valid_options):
     while True:
         user_input = input(prompt)
@@ -24,14 +28,16 @@ def validate_input(prompt, valid_options):
             print("Invalid input. Please try again.")
 
 def calculate_reward(attempt, max_attempts):
+    if max_attempts == 3:
+        return 10
+    elif max_attempts == 4:
+        return 5
     if attempt <= 2:
         return 3
-    elif attempt <= max_attempts - 2:
+    elif attempt <= 4:
         return 2
     else:
         return 1
-
-currency = 0
 
 def play_game(word, category, max_attempts):
     global currency
@@ -60,7 +66,7 @@ def play_game(word, category, max_attempts):
             msg = "You won!"
             currency += calculate_reward(attempt, max_attempts)
             break
-        elif guess != word and attempt == max_attempts:
+        elif attempt == max_attempts:
             msg = "Game over."
             print(f"The word was: {word}")
             break
