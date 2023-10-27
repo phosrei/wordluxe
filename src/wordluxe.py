@@ -81,6 +81,7 @@ def check_guess(guess, word):
     for i in range(length):
         if guess[i] in word and output[i] == "-":
             output[i] = colored(guess[i], 'yellow')
+            word = word.replace(guess[i], "-", 1)
         elif guess[i] in output[i]:
             continue
         else:
