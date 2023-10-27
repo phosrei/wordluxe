@@ -33,6 +33,7 @@ def calculate_reward(attempt, max_attempts):
 def play_game(word, category, max_attempts):
     currency = 0
     attempt = 1
+    msg = ""
 
     while attempt <= max_attempts:
         print(f"Attempt #{attempt}")
