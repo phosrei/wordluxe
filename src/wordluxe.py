@@ -31,8 +31,10 @@ def calculate_reward(attempt, max_attempts):
     else:
         return 1
 
+currency = 0
+
 def play_game(word, category, max_attempts):
-    currency = 0
+    global currency
     attempt = 1
     msg = ""
 
