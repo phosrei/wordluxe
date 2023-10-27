@@ -47,7 +47,6 @@ def play_game(word, category, max_attempts):
         elif category == "countries":
             if pycountry.countries.get(name=guess) == None:
                 print(f"'{guess}' is not a valid country.")
-                continue
 
         if len(guess) != len(word):
             print(f"Guess should be {len(word)} letters.")
@@ -72,7 +71,7 @@ def play_game(word, category, max_attempts):
 
 def check_guess(guess, word):
     length = len(word)
-    output = ["-"] * length
+    output = ["-"] * length 
 
     for i in range(length):
         if guess[i] == word[i]:
