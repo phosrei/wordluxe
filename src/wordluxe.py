@@ -44,9 +44,7 @@ def play_game(word, category, max_attempts):
             if category not in ["general", "fruits", "animals"]:
                 if category == "countries":
                     country = pycountry.countries.get(name=guess)
-                    if country:
-                        break
-                    else:
+                    if not country:
                         print(f"'{guess}' is not a valid country.")
                         guess = input()
                 break
