@@ -1,5 +1,6 @@
 import random
 import wordbank
+import pycountry
 from nltk.corpus import words
 from termcolor import colored
 
@@ -39,8 +40,15 @@ def play_game(word, category, max_attempts):
         print(f"Attempt #{attempt}")
         guess = input()
 
-        if guess.lower() not in dictionary:
+        while guess.lower() not in dictionary:
             if category not in ["general", "fruits", "animals"]:
+                if category == "countries":
+                    country = pycountry.countries.get(name=guess)
+                    if country:
+                        break
+                    else:
+                        print(f"'{guess}' is not a valid country.")
+                        guess = input()
                 break
             print(f"'{guess}' is not in the English dictionary.")
             guess = input()
