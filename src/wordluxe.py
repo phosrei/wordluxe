@@ -1,18 +1,18 @@
 import random
-import wordbank
 import pycountry
+from wordbank import categories
 from nltk.corpus import words
 from termcolor import colored
 
 dictionary = set(words.words())
 wordbank_cat = {
-    "general": wordbank.gen_difficulty,
-    "countries": wordbank.countries_difficulty,
-    "animals": wordbank.animals_difficulty,
-    "fruits": wordbank.fruits_difficulty,
-    "sports": wordbank.sports_difficulty,
-    "artists": wordbank.artists_difficulty,
-    "songs": wordbank.songs_difficulty
+    "general": categories.get("general"),
+    "countries": categories.get("countries"),
+    "animals": categories.get("animals"),
+    "fruits": categories.get("fruits"),
+    "sports": categories.get("sports"),
+    "artists": categories.get("artists"),
+    "songs": categories.get("songs")
 }
 
 def validate_input(prompt, valid_options):
@@ -105,8 +105,8 @@ def extreme_mode(word, category):
     play_game(word, category, max_attempts = 3)
 
 def main():
-    cat_input = validate_input("Choose category: ", wordbank.categories)
-    dif_input = validate_input("Choose difficulty: ", wordbank.gen_difficulty)
+    cat_input = validate_input("Choose category: ", categories)
+    dif_input = validate_input("Choose difficulty: ", categories.get("general"))
 
     word = random.choice(wordbank_cat[cat_input][dif_input])
 
