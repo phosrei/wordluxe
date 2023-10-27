@@ -40,16 +40,14 @@ def play_game(word, category, max_attempts):
         print(f"Attempt #{attempt}")
         guess = input()
 
-        while guess.lower() not in dictionary:
-            if category not in ["general", "fruits", "animals"]:
-                if category == "countries":
-                    country = pycountry.countries.get(name=guess)
-                    if not country:
-                        print(f"'{guess}' is not a valid country.")
-                        guess = input()
-                break
-            print(f"'{guess}' is not in the English dictionary.")
-            guess = input()
+        if category not in ["songs", "artists", "sports", "countries"]:
+            if guess.lower() not in dictionary:
+                print(f"'{guess}' is not a word.")
+                continue
+        elif category == "countries":
+            if pycountry.countries.get(name=guess) == None:
+                print(f"'{guess}' is not a valid country.")
+                continue
 
         if len(guess) != len(word):
             print(f"Guess should be {len(word)} letters.")
