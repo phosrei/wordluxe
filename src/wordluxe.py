@@ -166,6 +166,7 @@ def main():
             cat_input = validate_input("Choose category: ", categories)
             letter_input = random.choice(list(categories["general"]))
             print(f"Letter amount is randomly chosen in Hard: {letter_input}")
+            time.sleep(1)
         elif dif_input == "extreme":
             cat_input = random.choice(list(categories.keys()))
             print(f"Category is randomly chosen in Extreme: {cat_input}")
