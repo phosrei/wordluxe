@@ -6,8 +6,8 @@ from termcolor import colored
 
 
 dictionary = set(words.words())
-currency = 100
-powerups = ['Letter Eraser', 'Invisibility', 'Reveal Vowels']
+currency = 0
+
 wordbank_cat = {
     "general": categories.get("general"),
     "countries": categories.get("countries"),
@@ -17,7 +17,6 @@ wordbank_cat = {
     "artists": categories.get("artists"),
     "songs": categories.get("songs")
 }
-
 
 def validate_input(prompt, valid_options):
     while True:
@@ -39,7 +38,7 @@ def calculate_reward(attempt, max_attempts):
     else:
         return 1
 
-def play_game(word, category, max_attempts):
+def play_game(word, category, max_attempts, enable_powerups = True):
     global currency
     attempt = 1
     msg = ""
@@ -70,30 +69,28 @@ def play_game(word, category, max_attempts):
             msg = "Game over."
             print(f"The word was: {word}")
             break
-        powerup_input = input('Do you want to use a power-up?: ')
-        if powerup_input.lower() in ['y', 'yes']:
-            power_input = input("what power up would you want to use? Reveal Vowel(RV), Letter Eraser(LE), Invincibility(IN): " ).upper()
-            if power_input == "RV" and currency >= 3:
-                print("Reveal Vowel Used. (-3 coins)")
-                vowel_powerup(word)
-                currency -= 3
-            elif power_input == "LE" and currency >= 1:
-                print('Letter Eraser Used. (-1 coin)')
-                Eraser_powerup(guess, word)
-                currency -= 1
-            elif power_input == "IN" and currency >= 2:
-                print('Invincibilty Used. (-2 coins)')
-                currency -= 2
-                continue
 
+        if enable_powerups:
+            powerup_prompt = input("Do you want to use a power-up? ").lower()
 
-            else:
-                print('You do not have enough coins')
-        elif powerup_input not in ['n', 'no']:
-            print(f'invalid input: {powerup_input}')
-        else:
-            pass
-
+            if powerup_prompt in ["y", "yes"]:
+                powerup_input = input("Which power up would you like to use? Letter Eraser (LE), Invincibility (IN), or Reveal Vowels (RV) ")
+                elif power_input == "LE" and currency >= 1:
+                    print('Letter Eraser used. (-1 coin)')
+                    eraser_powerup(guess, word)
+                    currency -= 1
+                elif power_input == "IN" and currency >= 2:
+                    print('Invincibilty used. (-2 coins)')
+                    currency -= 2
+                    continue
+                if power_input == "RV" and currency >= 3:
+                    print("Reveal Vowels used. (-3 coins)")
+                    vowel_powerup(word)
+                    currency -= 3
+                else:
+                    print('You do not have enough coins')
+            elif powerup_input not in ['n', 'no']:
+                print(f'Invalid input: {powerup_input}')
 
         attempt += 1
 
@@ -129,19 +126,20 @@ def vowel_powerup(word):
         if word[i] in vowels:
             if word[i] not in vowels_hint:
                 vowels_hint.append(word[i])
+
     vowel_string = ", ".join(vowels_hint)
     print(f"The vowel(s) in the word is/are: {vowels_hint}")
 
-def Eraser_powerup(guess, word):
-    Eraser = "abcdefghijklmnopqrstvwxyz"
-    Eraser_hint = []
+def eraser_powerup(guess, word):
+    eraser = "abcdefghijklmnopqrstvwxyz"
+    eraser_list = []
 
-    for i in range(len(Eraser)):
-        if Eraser[i] not in word and Eraser[i] not in guess:
-                Eraser_hint.append(Eraser[i])
-    unused_letters = random.choice(list(Eraser_hint))
-    print(f"{unused_letters} is not in the word")
+    for i in range(len(eraser)):
+        if eraser[i] not in word and eraser[i] not in guess:
+                Eraser_hint.append(eraser[i])
 
+    random_unused_letter = random.choice(list(eraser_hint))
+    print(f"{random_unused_letter} is not in the word")
 
 def easy_mode(word, category):
     play_game(word, category, max_attempts = float("inf"))
@@ -153,7 +151,7 @@ def normal_mode(word, category):
 def hard_mode(word, category):
     play_game(word, category, max_attempts = 4)
 
-def extreme_mode(word, category):
+def extreme_mode(word, category, enable_powerups = False):
     play_game(word, category, max_attempts = 3)
 
 def main():
@@ -171,3 +169,7 @@ def main():
     game_modes[dif_input](word, cat_input)
 
 main()
+while True:
+    retry_input = input("Do you want to retry? ")
+    if retry_input.lower() in ["y", "yes"]:
+        main()
