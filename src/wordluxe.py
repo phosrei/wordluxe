@@ -151,8 +151,8 @@ def normal_mode(word, category):
 def hard_mode(word, category):
     play_game(word, category, max_attempts = 4)
 
-def extreme_mode(word, category, enable_powerups = False):
-    play_game(word, category, max_attempts = 3)
+def extreme_mode(word, category):
+    play_game(word, category, max_attempts = 3, enable_powerups = False)
 
 def main():
     cat_input = validate_input("Choose category: ", categories)
