@@ -6,8 +6,8 @@ from termcolor import colored
 
 
 dictionary = set(words.words())
-currency = 0
-
+currency = 100
+powerups = ['Letter Eraser', 'Invisibility', 'Reveal Vowels']
 wordbank_cat = {
     "general": categories.get("general"),
     "countries": categories.get("countries"),
@@ -70,7 +70,31 @@ def play_game(word, category, max_attempts):
             msg = "Game over."
             print(f"The word was: {word}")
             break
-        
+        powerup_input = input('Do you want to use a power-up?: ')
+        if powerup_input.lower() in ['y', 'yes']:
+            power_input = input("what power up would you want to use? Reveal Vowel(RV), Letter Eraser(LE), Invincibility(IN): " ).upper()
+            if power_input == "RV" and currency >= 3:
+                print("Reveal Vowel Used. (-3 coins)")
+                vowel_powerup(word)
+                currency -= 3
+            elif power_input == "LE" and currency >= 1:
+                print('Letter Eraser Used. (-1 coin)')
+                Eraser_powerup(guess, word)
+                currency -= 1
+            elif power_input == "IN" and currency >= 2:
+                print('Invincibilty Used. (-2 coins)')
+                currency -= 2
+                continue
+
+
+            else:
+                print('You do not have enough coins')
+        elif powerup_input not in ['n', 'no']:
+            print(f'invalid input: {powerup_input}')
+        else:
+            pass
+
+
         attempt += 1
 
     if max_attempts != float("inf"):
@@ -79,7 +103,7 @@ def play_game(word, category, max_attempts):
 
 def check_guess(guess, word):
     length = len(word)
-    output = ["X"] * length 
+    output = ["X"] * length
 
     for i in range(length):
         if guess[i] == word[i]:
@@ -96,6 +120,28 @@ def check_guess(guess, word):
             output[i] = colored(guess[i], 'dark_grey')
 
     return ''.join(output)
+
+def vowel_powerup(word):
+    vowels = 'aeiou'
+    vowels_hint = []
+
+    for i in range(len(word)):
+        if word[i] in vowels:
+            if word[i] not in vowels_hint:
+                vowels_hint.append(word[i])
+    vowel_string = ", ".join(vowels_hint)
+    print(f"The vowel(s) in the word is/are: {vowels_hint}")
+
+def Eraser_powerup(guess, word):
+    Eraser = "abcdefghijklmnopqrstvwxyz"
+    Eraser_hint = []
+
+    for i in range(len(Eraser)):
+        if Eraser[i] not in word and Eraser[i] not in guess:
+                Eraser_hint.append(Eraser[i])
+    unused_letters = random.choice(list(Eraser_hint))
+    print(f"{unused_letters} is not in the word")
+
 
 def easy_mode(word, category):
     play_game(word, category, max_attempts = float("inf"))
