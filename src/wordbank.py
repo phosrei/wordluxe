@@ -26,7 +26,7 @@ categories = {
     "sports": {
         "easy": ["golf", "judo", "dart", "dive"],
         "normal": ["board", "dance", "rugby", "chess"],
-        "hard": ["gammon", "cycling", "rowing", "skiing", "diving", "hockey", "karate", "racing"],
+        "hard": ["gammon", "rowing", "skiing", "diving", "hockey", "karate", "racing"],
         "extreme": ["surfing", "skating", "cycling", "cricket", "fencing", "hurling", "gliding"]
     },
     "artists": {
