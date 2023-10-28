@@ -75,22 +75,22 @@ def play_game(word, category, max_attempts, enable_powerups = True):
 
             if powerup_prompt in ["y", "yes"]:
                 powerup_input = input("Which power up would you like to use? Letter Eraser (LE), Invincibility (IN), or Reveal Vowels (RV) ")
-                elif power_input == "LE" and currency >= 1:
-                    print('Letter Eraser used. (-1 coin)')
-                    eraser_powerup(guess, word)
-                    currency -= 1
-                elif power_input == "IN" and currency >= 2:
-                    print('Invincibilty used. (-2 coins)')
-                    currency -= 2
-                    continue
-                if power_input == "RV" and currency >= 3:
-                    print("Reveal Vowels used. (-3 coins)")
-                    vowel_powerup(word)
-                    currency -= 3
-                else:
-                    print('You do not have enough coins')
-            elif powerup_input not in ['n', 'no']:
-                print(f'Invalid input: {powerup_input}')
+            elif power_input == "LE" and currency >= 1:
+                print('Letter Eraser used. (-1 coin)')
+                eraser_powerup(guess, word)
+                currency -= 1
+            elif power_input == "IN" and currency >= 2:
+                print('Invincibilty used. (-2 coins)')
+                currency -= 2
+                continue
+            if power_input == "RV" and currency >= 3:
+                print("Reveal Vowels used. (-3 coins)")
+                vowel_powerup(word)
+                currency -= 3
+            else:
+                print('You do not have enough coins')
+        elif powerup_input not in ['n', 'no']:
+            print(f'Invalid input: {powerup_input}')
 
         attempt += 1
 
