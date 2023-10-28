@@ -136,9 +136,9 @@ def eraser_powerup(guess, word):
 
     for i in range(len(eraser)):
         if eraser[i] not in word and eraser[i] not in guess:
-                Eraser_hint.append(eraser[i])
+                eraser_list.append(eraser[i])
 
-    random_unused_letter = random.choice(list(eraser_hint))
+    random_unused_letter = random.choice(list(eraser_list))
     print(f"{random_unused_letter} is not in the word")
 
 def easy_mode(word, category):
