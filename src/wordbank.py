@@ -32,7 +32,7 @@ categories = {
     "artists": {
         "easy": ["pink", "cher", "muse", "abba", "niki", "zedd", "enya", "pink", "kygo"],
         "normal": ["elton", "elvis", "miley", "adele", "twice", "avril", "usher", "lorde"],
-        "hard": ["shakira", "taylor", "eminem", "halsey", "ariana", "olivia", "willow", "alicia", "mariah],
+        "hard": ["shakira", "taylor", "eminem", "halsey", "ariana", "olivia", "willow", "alicia", "mariah"],
         "extreme": ["britney", "whitney", "shakira", "rihanna", "madonna", "beyonce", "nirvana", "beatles", "vanessa", "freddie", "pitbull"]
     },
     "songs": {
