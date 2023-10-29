@@ -56,7 +56,7 @@ def play_game(word, category, max_attempts):
                 print("Power-ups are disabled in extreme mode")
                 continue
             elif currency <= 0:
-                print("Unable to use power-ups at this time")
+                print("Not enough coins")
                 continue
             else:
                 powerup_result = get_powerup(word, output, currency)
