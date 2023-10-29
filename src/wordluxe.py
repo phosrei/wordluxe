@@ -119,7 +119,6 @@ def check_guess(guess, word):
     return ''.join(output)
 
 def get_powerup(word, output, currency):
-    print(f"The word is {word}")
     powerup_input = input("Choose a power-up:\n"
     "1. Letter Eraser (-1 coin)\n"
     "2. Invincibility (-2 coins)\n"
