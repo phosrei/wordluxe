@@ -5,7 +5,7 @@ from nltk.corpus import words
 from termcolor import colored
 
 dictionary = set(words.words())
-currency = 0
+currency = 3
 
 wordbank_cat = {
     "general": categories.get("general"),
@@ -44,16 +44,21 @@ def play_game(word, category, max_attempts):
     attempt = 1
     msg = ""
 
+    print(f"Coins: {currency}")
     print("Enter 'P' for power-ups")
 
     while attempt <= max_attempts:
         print(f"Attempt #{attempt}")
         guess = input()
 
-        if guess == "P" and max_attempts != 3 and currency > 0:
+        if guess in ["p", "P"] and max_attempts != 3 and currency > 0:
             powerup_result = get_powerup(word, output, currency)
-        elif guess == "P" and currency <= 0:
+            continue
+        elif guess in ["p", "P"] and currency <= 0:
             print("Unable use power-ups at this time")
+            continue
+        elif max_attempts == 3:
+            print("Unable to use power-ups in extreme mode")
             continue
             
         if category not in ["songs", "artists", "sports", "countries"]:
@@ -90,7 +95,7 @@ def play_game(word, category, max_attempts):
         print(f"Coins: {currency}")
     print(msg)
 
-    retry_game(word, category, max_attempts)
+    end_options(word, category, max_attempts)
 
 def check_guess(guess, word):
     length = len(word)
@@ -117,11 +122,13 @@ def get_powerup(word, output, currency):
     powerup_input = input("Choose a power-up:\n"
     "1. Letter Eraser (-1 coin)\n"
     "2. Invincibility (-2 coins)\n"
-    "3. Reveal Vowels (-3 coins)\n")
+    "3. Reveal Vowels (-3 coins)\n").upper()
 
-    if powerup_input not in ["1", "2", "3"]:
+    if powerup_input not in ["1", "2", "3", "Q"]:
         print('Invalid input')
         get_powerup(output, word)
+    elif powerup_input == "Q":
+        return
     elif powerup_input == "1" and currency >= 1:
         currency -= 1
         eraser_powerup(output, word)
@@ -154,7 +161,7 @@ def eraser_powerup(guess, word):
         if eraser[i] not in word and eraser[i] not in guess:
                 eraser_list.append(eraser[i])
 
-    random_unused_letter = random.choice(list(eraser_list))
+    random_unused_letter = random.choice(list(eraser_list)).upper()
     print(f"{random_unused_letter} is not in the word")
 
 def easy_mode(word, category):
@@ -170,15 +177,17 @@ def hard_mode(word, category):
 def extreme_mode(word, category):
     play_game(word, category, max_attempts = 3)
 
-def retry_game(word, category, max_attempts):
-    retry_input = input("Do you want to retry? (Y/N) ").upper()
-    if retry_input == "Y":
+def end_options(word, category, max_attempts):
+    end_input = input("RETRY (R) -- NEW GAME (N) -- QUIT (Q) ").upper()
+    if end_input == "R":
         play_game(word, category, max_attempts)
-    elif retry_input == "N":
+    elif end_input == "N":
+        main()
+    elif end_input == "Q":
         return
     else:
         print("Invalid input")
-        retry_game(word, category, max_attempts)
+        end_options(word, category, max_attempts)
 
 def main():
     cat_input = validate_input("Choose category: ", categories)
