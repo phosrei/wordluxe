@@ -18,27 +18,27 @@ categories = {
         "extreme": ["cheetah", "giraffe", "gazelle", "penguin", "raccoon", "meerkat", "ostrich", "gorilla", "hamster", "axolotl"]
     },
     "fruits": {
-        "easy": ["plum", "kiwi", "lime", "date", "pear"],
+        "easy": ["plum", "kiwi", "lime", "date", "pear", "corn"],
         "normal": ["apple", "grape", "lemon", "melon", "peach", "guava", "mango"],
         "hard": ["banana", "cherry", "papaya", "durian", "jujube", "orange", "pomelo"],
         "extreme": ["avocado", "apricot", "coconut", "kumquat", "currant"]
     },
     "sports": {
-        "easy": ["golf", "judo", "dart", "dive"],
-        "normal": ["board", "dance", "rugby", "chess"],
+        "easy": ["golf", "judo", "dart", "dive", "polo", "sumo", "ludo", "putt"],
+        "normal": ["board", "dance", "rugby", "chess", "bingo", "poker"],
         "hard": ["gammon", "rowing", "skiing", "diving", "hockey", "karate", "racing"],
         "extreme": ["surfing", "skating", "cycling", "cricket", "fencing", "hurling", "gliding"]
     },
     "artists": {
-        "easy": ["pink", "cher", "muse", "abba", "niki", "doja"],
-        "normal": ["elton", "elvis", "miley", "adele", "twice", "avril"],
-        "hard": ["shakira", "taylor", "eminem", "halsey", "ariana", "olivia"],
-        "extreme": ["britney", "whitney", "shakira", "rihanna", "madonna", "beyonce"]
+        "easy": ["pink", "cher", "muse", "abba", "niki", "zedd", "enya", "pink", "kygo"],
+        "normal": ["elton", "elvis", "miley", "adele", "twice", "avril", "usher", "lorde"],
+        "hard": ["shakira", "taylor", "eminem", "halsey", "ariana", "olivia", "willow", "alicia", "mariah],
+        "extreme": ["britney", "whitney", "shakira", "rihanna", "madonna", "beyonce", "nirvana", "beatles", "vanessa", "freddie", "pitbull"]
     },
     "songs": {
-        "easy": ["iris", "halo", "stay", "ymca", "hurt", "burn", "numb"],
-        "normal": ["lover", "ditto", "bones", "toxic", "faded", "hello"],
-        "hard": ["august", "cookie", "signal", "lovely", "royals"],
-        "extreme": ["pompeii", "flowers", "shallow", "finesse", "perfect", "animals", "creepin"]
+        "easy": ["iris", "halo", "stay", "ymca", "hurt", "burn", "numb", "gods", "maps", "ride", "king", "baby", "cold"],
+        "normal": ["lover", "ditto", "bones", "toxic", "faded", "hello", "sugar", "style", "radio", "alive"],
+        "hard": ["august", "cookie", "signal", "lovely", "royals", "yellow", "sparks", "havana", "angels", "heaven"],
+        "extreme": ["pompeii", "flowers", "shallow", "finesse", "perfect", "animals", "creepin", "monster", "mirrors", "skyfall"]
     }
 }
