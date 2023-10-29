@@ -6,10 +6,10 @@ categories = {
         "extreme": ["chicken", "musical", "capital", "journey", "freedom", "unknown", "honesty", "victory", "holiday", "history", "hydrate", "illegal", "silence", "justify", "monster", "breathe", "perfect", "nuclear", "quality", "society"]
     },
     "countries": {
-        "easy": ["chad", "peru", "oman", "cuba", "togo","fiji", "iran", "mali", "iraq"],
+        "easy": ["chad", "peru", "oman", "cuba", "togo", "fiji", "mali", "iraq"],
         "normal": ["egypt", "ghana", "india", "japan", "kenya", "libya", "nepal", "qatar", "spain", "turkey", "yemen", "chile", "bhutan", "haiti", "italy", "libya", "niger", "sudan"],
         "hard": ["brazil", "canada", "france", "greece", "jordan", "kuwait", "norway", "poland", "russia", "sweden", "turkey"],
-        "extreme": ["andorra", "austria", "bahrain", "belgium", "bolivia", "comoros", "croatia", "eritrea", "estonia", "finland", "georgia", "hungary", "iceland", "lesotho", "moldova", "namibia"]
+        "extreme": ["andorra", "germany", "austria", "bahrain", "belgium", "bolivia", "comoros", "croatia", "eritrea", "estonia", "finland", "georgia", "hungary", "iceland", "lesotho", "moldova", "namibia"]
     },
     "animals": {
         "easy": ["frog", "duck", "goat", "fish", "crab", "lion", "puma", "hawk", "mule", "hare", "toad", "mole", "lamb"],
