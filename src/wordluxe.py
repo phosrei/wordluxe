@@ -51,15 +51,16 @@ def play_game(word, category, max_attempts):
         print(f"Attempt #{attempt}")
         guess = input()
 
-        if guess in ["p", "P"] and max_attempts != 3 and currency > 0:
-            powerup_result = get_powerup(word, output, currency)
-            continue
-        elif guess in ["p", "P"] and currency <= 0:
-            print("Unable to use power-ups at this time")
-            continue
-        elif guess in ["p", "P"] and max_attempts == 3:
-            print("Unable to use power-ups in extreme mode")
-            continue
+        if guess in ["p", "P"]:
+            if max_attempts == 3:
+                print("Power-ups are disabled in extreme mode")
+                continue
+            elif currency <= 0:
+                print("Unable to use power-ups at this time")
+                continue
+            else:
+                powerup_result = get_powerup(word, output, currency)
+                continue
             
         if category not in ["songs", "artists", "sports", "countries"]:
             if guess.lower() not in dictionary:
