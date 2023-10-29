@@ -5,7 +5,7 @@ from nltk.corpus import words
 from termcolor import colored
 
 dictionary = set(words.words())
-currency = 3
+currency = 0
 
 wordbank_cat = {
     "general": categories.get("general"),
