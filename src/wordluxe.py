@@ -55,9 +55,9 @@ def play_game(word, category, max_attempts):
             powerup_result = get_powerup(word, output, currency)
             continue
         elif guess in ["p", "P"] and currency <= 0:
-            print("Unable use power-ups at this time")
+            print("Unable to use power-ups at this time")
             continue
-        elif max_attempts == 3:
+        elif guess in ["p", "P"] and max_attempts == 3:
             print("Unable to use power-ups in extreme mode")
             continue
             
