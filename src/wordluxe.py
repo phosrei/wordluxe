@@ -5,7 +5,7 @@ from nltk.corpus import words
 from termcolor import colored
 
 dictionary = set(words.words())
-currency = 0
+currency = 3
 
 wordbank_cat = {
     "general": categories.get("general"),
@@ -119,27 +119,25 @@ def check_guess(guess, word):
     return ''.join(output)
 
 def get_powerup(word, output, currency):
-    powerup_input = input("Choose a power-up:\n"
-    "1. Letter Eraser (-1 coin)\n"
-    "2. Invincibility (-2 coins)\n"
-    "3. Reveal Vowels (-3 coins)\n").upper()
+    while True:
+        powerup_input = input("Choose a power-up:\n"
+        "1. Letter Eraser (-1 coin)\n"
+        "2. Invincibility (-2 coins)\n"
+        "3. Reveal Vowels (-3 coins)\n").upper()
 
-    if powerup_input not in ["1", "2", "3", "Q"]:
-        print('Invalid input')
-        get_powerup(output, word)
-    elif powerup_input == "Q":
-        return
-    elif powerup_input == "1" and currency >= 1:
-        currency -= 1
-        eraser_powerup(output, word)
-    elif powerup_input == "2" and currency >= 2:
-        currency -= 2
-        return "2"
-    elif powerup_input == "3" and currency >= 3:
-        currency -= 3
-        vowel_powerup(word)
-    else:
-        print('You do not have enough coins')
+        if powerup_input == "Q":
+            return
+        elif powerup_input == "1" and currency >= 1:
+            currency -= 1
+            eraser_powerup(output, word)
+        elif powerup_input == "2" and currency >= 2:
+            currency -= 2
+            return "2"
+        elif powerup_input == "3" and currency >= 3:
+            currency -= 3
+            vowel_powerup(word)
+        else:
+            print("Invalid input")
 
 def vowel_powerup(word):
   vowels = 'aeiou'
