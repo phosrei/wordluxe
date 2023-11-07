@@ -20,7 +20,7 @@ wordbank_cat = {
 
 def validate_input(prompt, valid_options):
     while True:
-        user_input = input(prompt)
+        user_input = input(prompt).strip().lower()  # Apply both suggestions
         if user_input in valid_options:
             return user_input
         else:
