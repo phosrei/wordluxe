@@ -1,7 +1,6 @@
 # Download assets and create an assets folder in your Wordluxe Folder, then place all assets in the assets folder
 
 import customtkinter
-import wordluxe
 import tkinter
 from PIL import Image
 
