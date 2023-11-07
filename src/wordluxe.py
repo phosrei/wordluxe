@@ -50,7 +50,7 @@ def play_game(word, category, max_attempts):
 
     while attempt <= max_attempts:
         print(f"Attempt #{attempt}")
-        guess = input()
+        guess = input().strip()
 
         if guess.lower() == "p":
             if max_attempts == 3:
