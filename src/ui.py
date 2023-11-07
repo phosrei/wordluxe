@@ -6,8 +6,7 @@ from PIL import Image
 
 class WordluxeGame:
     def __init__(self):
-        self.game = customtkinter.CTk()
-        self.game.geometry("500x500")
+        self.game = tkinter.Tk()
         self.game.attributes("-fullscreen", "True")
         self.game.columnconfigure(0, weight=1)
         self.game.rowconfigure(0, weight=1)
@@ -34,7 +33,7 @@ class WordluxeGame:
         self.quit_button["state"]= "disabled"
 
     def quit_button_pressed(self):
-        self.game.destroy()
+        self.game.quit()
 
     def run(self):
         self.game.mainloop()
