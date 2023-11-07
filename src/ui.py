@@ -18,9 +18,6 @@ class WordluxeGame:
         bg_label = customtkinter.CTkLabel(master=self.game, text="", image=bg_image)
         bg_label.pack()
 
-        self.elements_frame = customtkinter.CTkFrame(self.game)
-        self.elements_frame.pack()
-
         wordluxe_image = customtkinter.CTkImage(Image.open("assets/game_logo.png"), size=(480, 60))
         self.wl_label = customtkinter.CTkLabel(master=self.game, text="", image=wordluxe_image)
         self.wl_label.place(relx=0.5, rely=0.30, anchor="center")
