@@ -1,6 +1,8 @@
 # Download assets and create an assets folder in your Wordluxe Folder, then place all assets in the assets folder
 
 import customtkinter
+import wordluxe
+import tkinter
 from PIL import Image
 
 class WordluxeGame:
@@ -16,11 +18,27 @@ class WordluxeGame:
         bg_label = customtkinter.CTkLabel(master=self.game, text="", image=bg_image)
         bg_label.pack()
 
-        wordluxe_image = customtkinter.CTkImage(Image.open("assets/game_logo.png"), size=(480, 60))
-        wl_label = customtkinter.CTkLabel(master=self.game, text="", image=wordluxe_image)
-        wl_label.place(relx=0.5, rely=0.05, anchor="center")
+        self.elements_frame = customtkinter.CTkFrame(self.game)
+        self.elements_frame.pack()
 
-        self.game.iconbitmap(r"assets\game_icon.ico")
+        wordluxe_image = customtkinter.CTkImage(Image.open("assets/game_logo.png"), size=(480, 60))
+        self.wl_label = customtkinter.CTkLabel(master=self.game, text="", image=wordluxe_image)
+        self.wl_label.place(relx=0.5, rely=0.30, anchor="center")
+
+        self.play_button = tkinter.Button(master=self.game, text="PLAY", font=("Clear Sans", 20, "bold"), width=19, height=1, borderwidth=1, command=self.play_button_pressed, state="normal", bg="Light Blue")
+        self.play_button.place(relx=0.5, rely=0.45, anchor="center")
+
+        self.quit_button = tkinter.Button(master=self.game, text="QUIT", font=("Clear Sans", 20, "bold"), width=19, height=1, borderwidth=1, command=self.quit_button_pressed, state="normal", bg="Light Blue")
+        self.quit_button.place(relx=0.5, rely=0.53, anchor="center")
+
+        self.game.iconbitmap("assets/game_icon.ico")
+
+    def play_button_pressed(self):
+        self.play_button["state"]= "disabled"
+        self.quit_button["state"]= "disabled"
+
+    def quit_button_pressed(self):
+        self.game.destroy()
 
     def run(self):
         self.game.mainloop()
