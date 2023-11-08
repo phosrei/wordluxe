@@ -1,87 +1,86 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QImage, QPixmap, QFont, QIcon
+from PyQt5.QtGui import QIcon
+from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt
+
+class GamePage(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setStyleSheet("background-image: url(assets/background1.png);")
+
+        layout = QVBoxLayout()
+        label = QLabel("This is the Second Page")
+        label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(label)
+        self.setLayout(layout)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+
+class SecondPage(QWidget):
+    def __init__(self):
+        super().__init__()
 
 class WordluxeGame(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("Wordluxe")
-        screen_res = QApplication.desktop().screenGeometry()
-        window_width = screen_res.width()
-        window_height = screen_res.height()
+        window_width = QApplication.desktop().screenGeometry().width()
+        window_height = QApplication.desktop().screenGeometry().height()
         self.setGeometry(0, 0, window_width, window_height)
         self.setWindowFlags(Qt.FramelessWindowHint)
 
-        bg_image = QImage("assets/background1.png")
-        bg_label = QLabel(self)
-        bg_label.setPixmap(QPixmap.fromImage(bg_image))
-        bg_label.setGeometry(0, 0, 1920, 1080)
-        bg_label.move(0, 0)
+        self.stacked_widget = QStackedWidget(self)
 
-        font = QFont("Inter", 20)
+        # Main Menu Page
+        main_menu_frame = QFrame(self.stacked_widget)
+        main_menu_frame.setGeometry(0, 0, window_width, window_height)
+        main_menu_frame.setObjectName("mmframe")
 
-        frame = QFrame(self)
-        frame.setGeometry(480, 200, 960, 680)
+        with open('src/style.qss', 'r') as f:
+            stylesheet = f.read()
+            main_menu_frame.setStyleSheet(stylesheet)
 
-        game_logo = QLabel(frame)
-        logo_pixmap = QPixmap("assets/game_logo.svg")
-        game_logo.setPixmap(logo_pixmap)
+        game_logo = QSvgWidget("assets/game_logo.svg", parent=main_menu_frame)
+        game_logo.setFixedSize(game_logo.renderer().defaultSize())
+        game_logo.move((main_menu_frame.width() - game_logo.width()) // 2, 50)
 
-        logo_width = logo_pixmap.width()
-        logo_height = logo_pixmap.height()
-
-        center_x = (frame.width() - logo_width) // 2
-        center_y = (frame.height() - logo_height) // 2
-
-        game_logo.setGeometry(center_x, 50, logo_width, logo_height)
-
-        button_layout = QHBoxLayout()
-
-        # Play button
-        play_button = QPushButton("Play", frame)
-        play_button.setFont(font)
+        play_button = QPushButton("Play", main_menu_frame, objectName="playButton")
         play_button.setFixedWidth(240)
         play_button.clicked.connect(self.play_button_pressed)
         play_button.setCursor(Qt.PointingHandCursor)
 
-        play_button.setStyleSheet("border-radius: 32px;"
-            "background-color: #fff;"
-            "padding: 20px;" 
-            "font-size: 20px"
-        )
-
-        # Quit button
-        quit_button = QPushButton("Quit", frame)
-        quit_button.setFont(font)
+        quit_button = QPushButton("Quit", main_menu_frame, objectName="quitButton")
         quit_button.setFixedWidth(240)
         quit_button.clicked.connect(self.quit_button_pressed)
         quit_button.setCursor(Qt.PointingHandCursor)
 
-        quit_button.setStyleSheet(
-            "border: 2px solid white;"
-            "border-radius: 32px;"
-            "background-color: transparent;"
-            "color: white;"
-            "padding: 20px;"
-            "font-size: 20px"
-        )
-        spacer = QSpacerItem(20, 20)
-
+        button_layout = QHBoxLayout()
         button_layout.addWidget(play_button)
-        button_layout.addItem(spacer)
+        button_layout.addSpacerItem(QSpacerItem(30, 30))
         button_layout.addWidget(quit_button)
-
-        frame.setLayout(button_layout)
-
         button_layout.setAlignment(Qt.AlignCenter)
-        button_layout.setContentsMargins(0, center_y + logo_height + 20, 0, 0)
+        button_layout.setContentsMargins(0, 300, 0, 0)
+        main_menu_frame.setLayout(button_layout)
+
+        # Game Page
+        game_page = GamePage()
+        self.stacked_widget.addWidget(main_menu_frame)
+        self.stacked_widget.addWidget(game_page)
+
+        # Second Page
+        second_page = SecondPage()
+        second_page.setObjectName("secondpage")  # Set an object name for the second page
+        self.stacked_widget.addWidget(second_page)
+
+        self.setCentralWidget(self.stacked_widget)
 
         self.setWindowIcon(QIcon("assets/game_icon.ico"))
 
     def play_button_pressed(self):
-        pass  # Add code here
+        self.stacked_widget.setCurrentIndex(1)  # Show the second page
 
     def quit_button_pressed(self):
         self.close()

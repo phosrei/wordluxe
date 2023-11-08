@@ -1,0 +1,37 @@
+QPushButton {
+    border-radius: 32px;
+    font-size: 20px;
+    padding: 20px;
+}
+
+#playButton {
+    background-color: #fff;
+}
+
+#mmframe {
+    background-image:url(assets/background1.png);
+}
+
+#gencat {
+    background-image:url(assets/background1.png);
+}
+
+#quitButton {
+    border: 2px solid white;
+    background-color: transparent;
+    color: white;
+}
+
+QPushButton:hover {
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
+#playButton:hover {
+    background-color: #e6e6e6;
+}
+
+#quitButton:hover {
+    border: 2px solid #b3b3b3;
+    color: #b3b3b3
+}
