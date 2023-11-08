@@ -1,68 +1,93 @@
-import customtkinter as ctk
-import tkinter as tk
-import io
-import cairosvg
-from PIL import Image
+import sys
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QImage, QPixmap, QFont, QIcon
+from PyQt5.QtCore import Qt
 
-class WordluxeGame:
+class WordluxeGame(QMainWindow):
     def __init__(self):
-        self.game = tk.Tk()
-        self.game.attributes("-fullscreen", True)
-        self.game.columnconfigure(0, weight=1)
-        self.game.rowconfigure(0, weight=1)
-        self.game.title("Wordluxe")
+        super().__init__()
 
-        # Convert SVG to a PNG image using cairosvg
-        svg_data = open("assets/game_logo.svg", "rb").read()
-        png_data = cairosvg.svg2png(bytestring=svg_data)
-        photo_image = tk.PhotoImage(data=png_data)
+        self.setWindowTitle("Wordluxe")
+        screen_res = QApplication.desktop().screenGeometry()
+        window_width = screen_res.width()
+        window_height = screen_res.height()
+        self.setGeometry(0, 0, window_width, window_height)
+        self.setWindowFlags(Qt.FramelessWindowHint)
 
-        bg_image = ctk.CTkImage(Image.open("assets/background1.png"), size=(1620, 1114))
+        bg_image = QImage("assets/background1.png")
+        bg_label = QLabel(self)
+        bg_label.setPixmap(QPixmap.fromImage(bg_image))
+        bg_label.setGeometry(0, 0, 1920, 1080)
+        bg_label.move(0, 0)
 
-        bg_label = ctk.CTkLabel(master=self.game, text="", image=bg_image)
-        bg_label.pack()
+        font = QFont("Inter", 20)
 
-        self.wl_label = ctk.CTkLabel(master=self.game, text="", image=photo_image)
-        self.wl_label.place(relx=0.5, rely=0.30, anchor="center")
+        frame = QFrame(self)
+        frame.setGeometry(480, 200, 960, 680)
 
-        self.play_button = tk.Button(
-            master=self.game,
-            text="PLAY",
-            font=("Clear Sans", 20, "bold"),
-            width=19,
-            height=1,
-            borderwidth=0,
-            command=self.play_button_pressed,
-            state="normal",
-            bg="Light Blue",
+        game_logo = QLabel(frame)
+        logo_pixmap = QPixmap("assets/game_logo.svg")
+        game_logo.setPixmap(logo_pixmap)
+
+        logo_width = logo_pixmap.width()
+        logo_height = logo_pixmap.height()
+
+        center_x = (frame.width() - logo_width) // 2
+        center_y = (frame.height() - logo_height) // 2
+
+        game_logo.setGeometry(center_x, 50, logo_width, logo_height)
+
+        button_layout = QHBoxLayout()
+
+        # Play button
+        play_button = QPushButton("Play", frame)
+        play_button.setFont(font)
+        play_button.setFixedWidth(240)
+        play_button.clicked.connect(self.play_button_pressed)
+        play_button.setCursor(Qt.PointingHandCursor)
+
+        play_button.setStyleSheet("border-radius: 32px;"
+            "background-color: #fff;"
+            "padding: 20px;" 
+            "font-size: 20px"
         )
-        self.play_button.place(relx=0.5, rely=0.45, anchor="center")
 
-        self.quit_button = tk.Button(
-            master=self.game,
-            text="QUIT",
-            font=("Clear Sans", 20, "bold"),
-            width=19,
-            height=1,
-            borderwidth=0,
-            command=self.quit_button_pressed,
-            state="normal",
-            bg="Light Blue",
+        # Quit button
+        quit_button = QPushButton("Quit", frame)
+        quit_button.setFont(font)
+        quit_button.setFixedWidth(240)
+        quit_button.clicked.connect(self.quit_button_pressed)
+        quit_button.setCursor(Qt.PointingHandCursor)
+
+        quit_button.setStyleSheet(
+            "border: 2px solid white;"
+            "border-radius: 32px;"
+            "background-color: transparent;"
+            "color: white;"
+            "padding: 20px;"
+            "font-size: 20px"
         )
-        self.quit_button.place(relx=0.5, rely=0.53, anchor="center")
+        spacer = QSpacerItem(20, 20)
 
-        self.game.iconbitmap("assets/game_icon.ico")
+        button_layout.addWidget(play_button)
+        button_layout.addItem(spacer)
+        button_layout.addWidget(quit_button)
+
+        frame.setLayout(button_layout)
+
+        button_layout.setAlignment(Qt.AlignCenter)
+        button_layout.setContentsMargins(0, center_y + logo_height + 20, 0, 0)
+
+        self.setWindowIcon(QIcon("assets/game_icon.ico"))
 
     def play_button_pressed(self):
-        self.play_button["state"] = "disabled"
-        self.quit_button["state"] = "disabled"
+        pass  # Add code here
 
     def quit_button_pressed(self):
-        self.game.quit()
-
-    def run(self):
-        self.game.mainloop()
+        self.close()
 
 if __name__ == "__main__":
+    app = QApplication(sys.argv)
     game_instance = WordluxeGame()
-    game_instance.run()
+    game_instance.show()
+    sys.exit(app.exec_())
