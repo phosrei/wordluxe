@@ -2,14 +2,19 @@ QPushButton {
     border-radius: 32px;
     font-size: 20px;
     padding: 20px;
+    font-family: Inter;
 }
 
-#playButton {
+#button {
     background-color: #fff;
 }
 
 #mmframe {
     background-image:url(assets/background1.png);
+}
+
+#gcframe {
+    background-image: url(assets/background1.png);
 }
 
 #gencat {
@@ -27,7 +32,7 @@ QPushButton:hover {
     border: 1px solid #ccc;
 }
 
-#playButton:hover {
+#button:hover {
     background-color: #e6e6e6;
 }
 
