@@ -13,6 +13,10 @@ category_str = tk.StringVar(value="")
 category = ""
 difficulty_str = tk.StringVar(value="")
 difficulty = ""
+word = ""
+letter_amount = 5
+word_str = tk.StringVar(value="")
+max_attempts = 6
 
 def play_button_clicked():
     main_menu.place_forget()
@@ -35,7 +39,6 @@ def category_button_clicked(chosen_category, category_var):
                         relheight = 1)
     bg_label3.place(x=-400, y=-2)
 
-
 def difficulty_button_clicked(chosen_difficulty, difficulty_var):
     global difficulty
     difficulty = chosen_difficulty
@@ -44,6 +47,7 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var):
 
     global word
     word = random.choice(wordbank_cat[category][difficulty])
+    update_word_tiles()
 
     difficulty_menu.place_forget()
     ingame_menu.place(relx = 0, 
@@ -309,5 +313,61 @@ diff_desc = tk.Label(master = ingame_menu,
 diff_desc.place(relx=0.5, 
                 rely=0.05, 
                 anchor="center")
+
+wt_image = ImageTk.PhotoImage(file="assets/tile.png")
+for i in range(max_attempts):
+    rely_value = 0.1 + i * 0.0625
+    for j in range(len(word)):
+        relx_value = 0.425 + j * 0.0375
+        word_tile = tk.Label(
+            master=ingame_menu,
+            image=wt_image,
+            borderwidth=0,
+        )
+        word_tile.place(relx=relx_value, 
+                        rely=rely_value, 
+                        anchor="center")
+
+def update_word_tiles():
+    for widget in ingame_menu.winfo_children():
+        if isinstance(widget, tk.Label) and widget.winfo_name() == "word_tile":
+            widget.destroy()
+
+    wt_image = ImageTk.PhotoImage(file="assets/tile.png")
+    for i in range(max_attempts):
+        rely_value = 0.1 + i * 0.0625
+        for j in range(len(word)):
+            if len(word) == 4:
+                relx_value = 0.445 + j * 0.0375
+                word_tile = tk.Label(
+                    master=ingame_menu,
+                    image=wt_image,
+                    borderwidth=0,
+                )
+                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
+            elif len(word) == 5:
+                relx_value = 0.425 + j * 0.0375
+                word_tile = tk.Label(
+                    master=ingame_menu,
+                    image=wt_image,
+                    borderwidth=0,
+                )
+                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
+            if len(word) == 6:
+                relx_value = 0.405 + j * 0.0375
+                word_tile = tk.Label(
+                    master=ingame_menu,
+                    image=wt_image,
+                    borderwidth=0,
+                )
+                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
+            if len(word) == 7:
+                relx_value = 0.385 + j * 0.0375
+                word_tile = tk.Label(
+                    master=ingame_menu,
+                    image=wt_image,
+                    borderwidth=0,
+                )
+                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
 
 game.mainloop()
