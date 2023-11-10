@@ -1,12 +1,18 @@
 import tkinter as tk
 import cairosvg
-import time
+import random
+from wordluxe import wordbank_cat
 from PIL import ImageTk, Image
 
 game = tk.Tk()
 game.attributes("-fullscreen", True)
 game.title("Wordluxe")
 game.iconbitmap("assets/game_icon.ico")
+
+category_str = tk.StringVar(value="")
+category = ""
+difficulty_str = tk.StringVar(value="")
+difficulty = ""
 
 def play_button_clicked():
     main_menu.place_forget()
@@ -16,15 +22,29 @@ def play_button_clicked():
                         relheight = 1)
     bg_label2.place(x=-400, y=-2)
 
-def category_button_clicked():
+def category_button_clicked(chosen_category, category_var):
+    global category
+    category = chosen_category
+    global category_str
+    category_str.set(category_var)
+
     category_menu.place_forget()
     difficulty_menu.place(relx = 0, 
                         rely = 0, 
                         relwidth = 1, 
                         relheight = 1)
     bg_label3.place(x=-400, y=-2)
-    
-def difficulty_button_clicked():
+
+
+def difficulty_button_clicked(chosen_difficulty, difficulty_var):
+    global difficulty
+    difficulty = chosen_difficulty
+    global difficulty_str
+    difficulty_str.set(difficulty_var)
+
+    global word
+    word = random.choice(wordbank_cat[category][difficulty])
+
     difficulty_menu.place_forget()
     ingame_menu.place(relx = 0, 
                         rely = 0, 
@@ -119,7 +139,7 @@ general_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#2c4774",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("general", "General"))
 general_button.place(relx=0.5, 
                   rely=0.2, 
                   anchor="center")
@@ -131,7 +151,7 @@ countries_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#2a4c71",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("countries", "Countries"))
 countries_button.place(relx=0.5, 
                   rely=0.3, 
                   anchor="center")
@@ -143,7 +163,7 @@ animals_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#28506d",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("animals", "Animals"))
 animals_button.place(relx=0.5, 
                   rely=0.4, 
                   anchor="center")
@@ -155,7 +175,7 @@ fruits_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#26556a",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("fruits", "Fruits"))
 fruits_button.place(relx=0.5, 
                   rely=0.5, 
                   anchor="center")
@@ -167,7 +187,7 @@ sports_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#245967",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("sports", "Sports"))
 sports_button.place(relx=0.5, 
                   rely=0.6, 
                   anchor="center")
@@ -179,7 +199,7 @@ songs_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#216061",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("songs", "Songs"))
 songs_button.place(relx=0.5, 
                   rely=0.7, 
                   anchor="center")
@@ -191,7 +211,7 @@ artists_button = tk.Button(master = category_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#216061",
-                        command = category_button_clicked)
+                        command = lambda: category_button_clicked("artists", "Artists"))
 artists_button.place(relx=0.5, 
                   rely=0.8, 
                   anchor="center")
@@ -222,7 +242,7 @@ easy_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#2c4774",
-                        command = difficulty_button_clicked)
+                        command = lambda: difficulty_button_clicked("easy", "Easy"))
 easy_button.place(relx=0.5, 
                   rely=0.2, 
                   anchor="center")
@@ -234,7 +254,7 @@ normal_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#2a4c71",
-                        command = difficulty_button_clicked)
+                        command = lambda: difficulty_button_clicked("normal", "Normal"))
 normal_button.place(relx=0.5, 
                   rely=0.3, 
                   anchor="center")
@@ -246,7 +266,7 @@ hard_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#28506d",
-                        command = difficulty_button_clicked)
+                        command = lambda: difficulty_button_clicked("hard", "Hard"))
 hard_button.place(relx=0.5, 
                   rely=0.4, 
                   anchor="center")
@@ -258,7 +278,7 @@ extreme_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#26556a",
-                        command = difficulty_button_clicked)
+                        command = lambda: difficulty_button_clicked("extreme", "Extreme"))
 extreme_button.place(relx=0.5, 
                   rely=0.5, 
                   anchor="center")
@@ -271,5 +291,23 @@ bg_label4 = tk.Label(master = ingame_menu,
                     image = bg_image,
                     width = 1920,
                     height = 1080)
+
+catt_desc = tk.Label(master = ingame_menu,
+                    textvariable = category_str,
+                    font = ("Franklin Gothic Medium", 15, "bold"),
+                    bg = "#2e4377",
+                    fg = "Steel Blue")
+catt_desc.place(relx=0.5, 
+                rely=0.025, 
+                anchor="center")
+
+diff_desc = tk.Label(master = ingame_menu,
+                    textvariable = difficulty_str,
+                    font = ("Franklin Gothic Medium", 15, "bold"),
+                    bg = "#2e4377",
+                    fg = "Steel Blue")
+diff_desc.place(relx=0.5, 
+                rely=0.05, 
+                anchor="center")
 
 game.mainloop()
