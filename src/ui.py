@@ -10,13 +10,10 @@ game.title("Wordluxe")
 game.iconbitmap("assets/game_icon.ico")
 
 category_str = tk.StringVar(value="")
-category = ""
 difficulty_str = tk.StringVar(value="")
+category = ""
 difficulty = ""
-word = ""
-letter_amount = 5
-word_str = tk.StringVar(value="")
-max_attempts = 6
+attempts = 0
 
 def play_button_clicked():
     main_menu.place_forget()
@@ -39,7 +36,7 @@ def category_button_clicked(chosen_category, category_var):
                         relheight = 1)
     bg_label3.place(x=-400, y=-2)
 
-def difficulty_button_clicked(chosen_difficulty, difficulty_var):
+def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
     global difficulty
     difficulty = chosen_difficulty
     global difficulty_str
@@ -49,12 +46,83 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var):
     word = random.choice(wordbank_cat[category][difficulty])
     update_word_tiles()
 
+    global attempts
+
     difficulty_menu.place_forget()
     ingame_menu.place(relx = 0, 
                         rely = 0, 
                         relwidth = 1, 
                         relheight = 1)
     bg_label4.place(x=-400, y=-2)
+
+    wt_image = ImageTk.PhotoImage(file="assets/tile.png")
+    while attempts < max_attempts:
+        rely_value = 0.125 + attempts * 0.0935
+        for j in range(len(word)):
+            if len(word) == 4:
+                relx_value = 0.413 + j * 0.0585
+            elif len(word) == 5:
+                relx_value = 0.3834 + j * 0.0585
+            elif len(word) == 6:
+                relx_value = 0.3541 + j * 0.0585
+            elif len(word) == 7:
+                relx_value = 0.3254 + j * 0.0585
+
+            word_tile = tk.Label(
+                master=ingame_menu,
+                image=wt_image,
+                borderwidth=0,
+                border=0,
+                width=75,
+                height=75,
+                bg="Steel Blue"
+            )
+            word_tile.place(relx=relx_value, 
+                            rely=rely_value, 
+                            anchor="center")
+
+        attempts += 1
+    
+    if len(word) == 4:
+        letter_eraser.place(relx=0.67, 
+                        rely=0.125, 
+                        anchor="center")
+        invincible.place(relx=0.67, 
+                  rely=0.235, 
+                  anchor="center")
+        reveal_vowel.place(relx=0.67, 
+                  rely=0.345, 
+                  anchor="center")
+    elif len(word) == 5:
+        letter_eraser.place(relx=0.70, 
+                        rely=0.125, 
+                        anchor="center")
+        invincible.place(relx=0.70, 
+                  rely=0.235, 
+                  anchor="center")
+        reveal_vowel.place(relx=0.70, 
+                  rely=0.345, 
+                  anchor="center")
+    elif len(word) == 6:
+        letter_eraser.place(relx=0.73, 
+                        rely=0.125, 
+                        anchor="center")
+        invincible.place(relx=0.73, 
+                  rely=0.235, 
+                  anchor="center")
+        reveal_vowel.place(relx=0.73, 
+                  rely=0.345, 
+                  anchor="center")
+    elif len(word) == 7:
+        letter_eraser.place(relx=0.76, 
+                        rely=0.125, 
+                        anchor="center")
+        invincible.place(relx=0.76, 
+                  rely=0.235, 
+                  anchor="center")
+        reveal_vowel.place(relx=0.76, 
+                  rely=0.345, 
+                  anchor="center")
 
 # Main Menu Frame
 main_menu = tk.Frame(game)
@@ -76,8 +144,7 @@ svg_data = open("assets/game_logo.svg", "rb").read()
 png_data = cairosvg.svg2png(bytestring = svg_data)
 photo_image = tk.PhotoImage(data = png_data)
 
-wl_label = tk.Label(master = main_menu, 
-                    text = "", 
+wl_label = tk.Label(master = main_menu,  
                     image = photo_image,
                     width = 740,
                     height = 89)
@@ -89,7 +156,8 @@ wl_label.place(relx = 0.5,
 game_desc = tk.Label(master = main_menu,
                     text = "  The all new and \n improved wordle",
                     font = ("Times New Roman", 40),
-                    bg = "#26556a")
+                    bg = "#26556a",
+                    fg = "White")
 game_desc.place(relx=0.5, 
                 rely=0.48, 
                 anchor="center")
@@ -107,8 +175,9 @@ play_button.place(relx = 0.63,
                   anchor="center")
 
 # How to Play Button
+htp_image = ImageTk.PhotoImage(file = "assets/htp_button.png")
 htp_button = tk.Button(master = main_menu,
-                        image = play_image,
+                        image = htp_image,
                         borderwidth = 0,
                         command = "",
                         state = "normal",
@@ -246,7 +315,7 @@ easy_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#2c4774",
-                        command = lambda: difficulty_button_clicked("easy", "Easy"))
+                        command = lambda: difficulty_button_clicked("easy", "Easy", max_attempts=6))
 easy_button.place(relx=0.5, 
                   rely=0.2, 
                   anchor="center")
@@ -258,7 +327,7 @@ normal_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#2a4c71",
-                        command = lambda: difficulty_button_clicked("normal", "Normal"))
+                        command = lambda: difficulty_button_clicked("normal", "Normal", max_attempts=6))
 normal_button.place(relx=0.5, 
                   rely=0.3, 
                   anchor="center")
@@ -270,7 +339,7 @@ hard_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#28506d",
-                        command = lambda: difficulty_button_clicked("hard", "Hard"))
+                        command = lambda: difficulty_button_clicked("hard", "Hard", max_attempts=4))
 hard_button.place(relx=0.5, 
                   rely=0.4, 
                   anchor="center")
@@ -282,7 +351,7 @@ extreme_button = tk.Button(master = difficulty_menu,
                         borderwidth= 0,
                         state = "normal",
                         bg = "#26556a",
-                        command = lambda: difficulty_button_clicked("extreme", "Extreme"))
+                        command = lambda: difficulty_button_clicked("extreme", "Extreme", max_attempts=3))
 extreme_button.place(relx=0.5, 
                   rely=0.5, 
                   anchor="center")
@@ -314,60 +383,64 @@ diff_desc.place(relx=0.5,
                 rely=0.05, 
                 anchor="center")
 
-wt_image = ImageTk.PhotoImage(file="assets/tile.png")
-for i in range(max_attempts):
-    rely_value = 0.1 + i * 0.0625
-    for j in range(len(word)):
-        relx_value = 0.425 + j * 0.0375
-        word_tile = tk.Label(
-            master=ingame_menu,
-            image=wt_image,
-            borderwidth=0,
-        )
-        word_tile.place(relx=relx_value, 
-                        rely=rely_value, 
-                        anchor="center")
+# Power-up icons
+letter_eraser_image = ImageTk.PhotoImage(file = "assets/letter_eraser.png", width=75, height=75)
+letter_eraser = tk.Button(master = ingame_menu,
+                        image = letter_eraser_image,
+                        borderwidth = 0,
+                        state = "normal",
+                        bg = "#2c4774",
+                        command = "")
+
+invincible_image = ImageTk.PhotoImage(file = "assets/invincible.png")
+invincible = tk.Button(master = ingame_menu,
+                        image = invincible_image,
+                        borderwidth = 0,
+                        state = "normal",
+                        bg = "#2a4c71",
+                        command = "")
+
+vowel_image = ImageTk.PhotoImage(file = "assets/vowel.png")
+reveal_vowel = tk.Button(master = ingame_menu,
+                        image = vowel_image,
+                        borderwidth = 0,
+                        state = "normal",
+                        bg = "#28506d",
+                        command = "")
+
+keyboard_layout = [
+    'QWERTYUIOP',
+    'ASDFGHJKL',
+    '⌫ZXCVBNM↵'
+]
+
+# Create and place the keyboard buttons
+keyboard_frame = tk.Frame(ingame_menu, background="#216061")  # Set background color for the keyboard frame
+keyboard_frame.place(relx=0.5, rely=0.825, anchor="center")
+
+for row, key_row in enumerate(keyboard_layout, 1):
+    for col, char in enumerate(key_row):
+        if row == 2:  # ASDFGHJKL row
+            button_width = 2
+            button_height = 1
+            column_span = 2
+        elif row == 3:  # ASDFGHJKL row
+            button_width = 2
+            button_height = 1
+            column_span = 2
+        else:
+            button_width = 2
+            button_height = 1
+            column_span = 1
+
+        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=button_width, height=button_height, command="")
+        button.grid(row=row, column=col, padx=2, pady=2, columnspan=column_span)
+
+
 
 def update_word_tiles():
     for widget in ingame_menu.winfo_children():
         if isinstance(widget, tk.Label) and widget.winfo_name() == "word_tile":
             widget.destroy()
-
-    wt_image = ImageTk.PhotoImage(file="assets/tile.png")
-    for i in range(max_attempts):
-        rely_value = 0.1 + i * 0.0625
-        for j in range(len(word)):
-            if len(word) == 4:
-                relx_value = 0.445 + j * 0.0375
-                word_tile = tk.Label(
-                    master=ingame_menu,
-                    image=wt_image,
-                    borderwidth=0,
-                )
-                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
-            elif len(word) == 5:
-                relx_value = 0.425 + j * 0.0375
-                word_tile = tk.Label(
-                    master=ingame_menu,
-                    image=wt_image,
-                    borderwidth=0,
-                )
-                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
-            if len(word) == 6:
-                relx_value = 0.405 + j * 0.0375
-                word_tile = tk.Label(
-                    master=ingame_menu,
-                    image=wt_image,
-                    borderwidth=0,
-                )
-                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
-            if len(word) == 7:
-                relx_value = 0.385 + j * 0.0375
-                word_tile = tk.Label(
-                    master=ingame_menu,
-                    image=wt_image,
-                    borderwidth=0,
-                )
-                word_tile.place(relx=relx_value, rely=rely_value, anchor="center")
 
 game.mainloop()
