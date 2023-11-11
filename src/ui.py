@@ -367,20 +367,20 @@ bg_label4 = tk.Label(master = ingame_menu,
 
 catt_desc = tk.Label(master = ingame_menu,
                     textvariable = category_str,
-                    font = ("Franklin Gothic Medium", 15, "bold"),
-                    bg = "#2e4377",
-                    fg = "Steel Blue")
+                    font = ("Franklin Gothic Medium", 20, "bold"),
+                    bg = "#303d7b",
+                    fg = "White")
 catt_desc.place(relx=0.5, 
-                rely=0.025, 
+                rely=0.02, 
                 anchor="center")
 
 diff_desc = tk.Label(master = ingame_menu,
                     textvariable = difficulty_str,
-                    font = ("Franklin Gothic Medium", 15, "bold"),
-                    bg = "#2e4377",
-                    fg = "Steel Blue")
+                    font = ("Franklin Gothic Medium", 20, "bold"),
+                    bg = "#303d7b",
+                    fg = "White")
 diff_desc.place(relx=0.5, 
-                rely=0.05, 
+                rely=0.055, 
                 anchor="center")
 
 # Power-up icons
@@ -415,28 +415,64 @@ keyboard_layout = [
 ]
 
 # Create and place the keyboard buttons
-keyboard_frame = tk.Frame(ingame_menu, background="#216061")  # Set background color for the keyboard frame
+keyboard_frame = tk.Frame(ingame_menu, background="#216061")
 keyboard_frame.place(relx=0.5, rely=0.825, anchor="center")
 
 for row, key_row in enumerate(keyboard_layout, 1):
     for col, char in enumerate(key_row):
-        if row == 2:  # ASDFGHJKL row
-            button_width = 2
-            button_height = 1
+        if row == 2:
             column_span = 2
-        elif row == 3:  # ASDFGHJKL row
-            button_width = 2
-            button_height = 1
+        elif row == 3:
             column_span = 2
         else:
-            button_width = 2
-            button_height = 1
             column_span = 1
 
-        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=button_width, height=button_height, command="")
+        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=2, height=1, command=lambda c=char: show_letter_tile(c))
         button.grid(row=row, column=col, padx=2, pady=2, columnspan=column_span)
 
+letter_count = 0
 
+word_tile_labels = []  # List to store references to the labels
+
+def show_letter_tile(char):
+    global letter_count
+    global attempts
+
+    if char == "⌫":
+        if word_tile_labels:
+            last_label = word_tile_labels.pop()
+            last_label.place_forget()
+            letter_count -= 1
+    elif char == "↵":
+        pass
+    else:
+        if len(word) == 4:
+            relx_value = 0.413 + (letter_count % len(word)) * 0.0585
+        elif len(word) == 5:
+            relx_value = 0.3834 + (letter_count % len(word)) * 0.0585
+        elif len(word) == 6:
+            relx_value = 0.3541 + (letter_count % len(word)) * 0.0585
+        elif len(word) == 7:
+            relx_value = 0.3254 + (letter_count % len(word)) * 0.0585
+        rely_value = 0.125 + (letter_count // len(word)) * 0.0935
+
+        word_tile_letter = tk.Label(
+            master=ingame_menu,
+            text=char,
+            font=("Arial", 30, "bold"),
+            borderwidth=0,
+            border=0,
+            width=2,
+            height=1,
+            bg="Steel Blue"
+        )
+        word_tile_letter.place(relx=relx_value, rely=rely_value, anchor="center")
+        word_tile_labels.append(word_tile_letter)
+
+        letter_count += 1
+
+        if letter_count % len(word) == 0:
+            attempts += 1
 
 def update_word_tiles():
     for widget in ingame_menu.winfo_children():
