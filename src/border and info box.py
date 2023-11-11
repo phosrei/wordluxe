@@ -71,3 +71,48 @@ play_btn_reg.pack(pady=10, padx=90, side="top", anchor="c")
 
 
 root.mainloop()
+
+
+
+#info box
+#outline color still in progress
+
+''''
+import tkinter as tk
+from tkinter import PhotoImage
+
+
+root = tk.Tk()
+root.title("border test")
+I_button = PhotoImage(file="Invincible.png")
+
+class HoverButton(tk.Button):
+    def __init__(self, master=None, **kwargs):
+        tk.Button.__init__(self, master, **kwargs)
+        self.tooltip = None
+        self.bind("<Enter>", self.hovered)
+        self.bind("<Leave>", self.not_hovered)
+
+    def hovered(self, event):
+        if not self.tooltip:
+            x, y, _, _ = self.bbox("insert")
+            x += self.winfo_rootx() + 50
+            y += self.winfo_rooty() + 50
+
+            self.tooltip = tk.Toplevel(self)
+            self.tooltip.wm_overrideredirect(True)
+            self.tooltip.wm_geometry(f"+{x}+{y}")
+
+            label = tk.Label(self.tooltip, text="this can save you from losing an attempt", borderwidth=8, bg='gray', highlightbackground='white', highlightcolor='white')
+            label.pack(ipadx=20, ipady=20)
+
+    def not_hovered(self, event):
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+hover_button = HoverButton(root, image=I_button, highlightcolor='gray')
+hover_button.pack(pady=10)
+
+
+root.mainloop()
+''''
