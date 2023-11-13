@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import cairosvg
 import random
+import time
 from wordluxe import wordbank_cat
 from PIL import ImageTk, Image
 
