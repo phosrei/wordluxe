@@ -379,21 +379,101 @@ diff_desc.place(relx=0.5,
                 anchor="center")
 
 # Power-up icons
+
+#LETTER ERASER
 letter_eraser_image = ImageTk.PhotoImage(file = "assets/letter_eraser.png", width=75, height=75)
-letter_eraser = tk.Button(master = ingame_menu,
+
+class HoverButton1(tk.Button):
+    def __init__(self, master=None, **kwargs):
+        tk.Button.__init__(self, master, **kwargs)
+        self.tooltip = None
+        self.bind("<Enter>", self.hover_click)
+        self.bind("<Leave>", self.leave)
+        
+    def hover_click(self, event):
+        letter_eraser = tk.Button(master = ingame_menu,
                         image = letter_eraser_image,
                         borderwidth = 0,
                         state = "normal",
                         bg = "#2c4774",
                         command = "")
+        if not self.tooltip:
+                        x, y, _, _ = self.bbox("")
+                        x += self.winfo_rootx() + 80
+                        y += self.winfo_rooty() + 80
+
+                        self.tooltip = tk.Toplevel(self)
+                        self.tooltip.wm_overrideredirect(True)
+                        self.tooltip.wm_geometry(f"+{x}+{y}")
+
+                        label = tk.Label(self.tooltip,
+                                text="this can reveal a letter",
+                                borderwidth=10, bg='#2c4774',
+                                highlightbackground='white',
+                                 highlightcolor='white')
+                        label.pack(ipadx=10, ipady=10)
+
+    def leave(self, event):
+        letter_eraser.config(borderwidth=0, text="")
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+letter_eraser = HoverButton1(master = ingame_menu,
+                        image = letter_eraser_image,
+                        borderwidth = 0,
+                        state = "normal",
+                        bg = "#2c4774",
+                        command = "")
+letter_eraser.pack()
+
+#INVINCIBILITY
 
 invincible_image = ImageTk.PhotoImage(file = "assets/invincible.png")
-invincible = tk.Button(master = ingame_menu,
+
+class lEButton(tk.Button):
+    def __init__(self, master=None, **kwargs):
+        tk.Button.__init__(self, master, **kwargs)
+        self.tooltip = None
+        self.bind("<Enter>", self.hover_click)
+        self.bind("<Leave>", self.leave)
+        
+    def hover_click(self, event):
+        invincible = tk.Button(master = ingame_menu,
                         image = invincible_image,
                         borderwidth = 0,
                         state = "normal",
                         bg = "#2a4c71",
                         command = "")
+        if not self.tooltip:
+                        x, y, _, _ = self.bbox("")
+                        x += self.winfo_rootx() + 80
+                        y += self.winfo_rooty() + 80
+
+                        self.tooltip = tk.Toplevel(self)
+                        self.tooltip.wm_overrideredirect(True)
+                        self.tooltip.wm_geometry(f"+{x}+{y}")
+
+                        label = tk.Label(self.tooltip,
+                                text="this can save you from losing an attempt",
+                                borderwidth=10, bg='#2c4774',
+                                highlightbackground='white',
+                                 highlightcolor='white')
+                        label.pack(ipadx=10, ipady=10)
+
+    def leave(self, event):
+        letter_eraser.config(borderwidth=0, text="")
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+invincible = lEButton(master = ingame_menu,
+                    image = invincible_image,
+                    borderwidth = 0,
+                    state = "normal",
+                    bg = "#2a4c71",
+                    command = "")
+invincible.pack()
+
+#REVEALVOWEL
 
 vowel_image = ImageTk.PhotoImage(file = "assets/vowel.png")
 reveal_vowel = tk.Button(master = ingame_menu,
@@ -402,6 +482,49 @@ reveal_vowel = tk.Button(master = ingame_menu,
                         state = "normal",
                         bg = "#28506d",
                         command = "")
+
+class RVButton(tk.Button):
+    def __init__(self, master=None, **kwargs):
+        tk.Button.__init__(self, master, **kwargs)
+        self.tooltip = None
+        self.bind("<Enter>", self.hover_click)
+        self.bind("<Leave>", self.leave)
+        
+    def hover_click(self, event):
+        reveal_vowel = tk.Button(master = ingame_menu,
+                        image = vowel_image,
+                        borderwidth = 0,
+                        state = "normal",
+                        bg = "#28506d",
+                        command = "")
+        if not self.tooltip:
+                        x, y, _, _ = self.bbox("")
+                        x += self.winfo_rootx() + 80
+                        y += self.winfo_rooty() + 80
+
+                        self.tooltip = tk.Toplevel(self)
+                        self.tooltip.wm_overrideredirect(True)
+                        self.tooltip.wm_geometry(f"+{x}+{y}")
+
+                        label = tk.Label(self.tooltip,
+                                text="this can reveal a vowel",
+                                borderwidth=10, bg='#2c4774',
+                                highlightbackground='white',
+                                 highlightcolor='white')
+                        label.pack(ipadx=10, ipady=10)
+
+    def leave(self, event):
+        letter_eraser.config(borderwidth=0, text="")
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+reveal_vowel = RVButton(master = ingame_menu,
+                        image = vowel_image,
+                        borderwidth = 0,
+                        state = "normal",
+                        bg = "#28506d",
+                        command = "")
+reveal_vowel.pack()
 
 lettervar = tk.StringVar()
 guess_input = tk.Entry(textvariable=lettervar, master=ingame_menu, font=("Helvetica", 20), justify="center")
