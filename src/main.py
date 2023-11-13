@@ -9,18 +9,18 @@ dictionary = set(words.words())
 currency = 0
 
 wordbank_cat = {
-    "general": categories.get("general"),
-    "countries": categories.get("countries"),
-    "animals": categories.get("animals"),
-    "fruits": categories.get("fruits"),
-    "sports": categories.get("sports"),
-    "artists": categories.get("artists"),
-    "songs": categories.get("songs")
+    "general": categories["general"],
+    "countries": categories["countries"],
+    "animals": categories["animals"],
+    "fruits": categories["fruits"],
+    "sports": categories["sports"],
+    "artists": categories["artists"],
+    "songs": categories["songs"]
 }
 
 def validate_input(prompt, valid_options):
     while True:
-        user_input = input(prompt).strip().lower()  # Apply both suggestions
+        user_input = input(prompt).strip().lower()
         if user_input in valid_options:
             return user_input
         else:
@@ -144,11 +144,11 @@ def get_powerup(word, output, currency):
 
 def vowel_powerup(word):
     vowels = 'aeiou'
-    vowels_hint = []
+    vowels_hint = set()
 
     for char in word:
-        if char in vowels and char not in vowels_hint:
-            vowels_hint.append(char)
+        if char in vowels:
+            vowels_hint.add(char)
 
     vowel_string = ", ".join(vowels_hint)
     print(f"The vowel(s) in the word is/are: {vowel_string.upper()}")
@@ -162,7 +162,7 @@ def eraser_powerup(guess, word):
                 eraser_list.append(letter)
 
     random_unused_letter = random.choice(eraser_list).upper()
-    print(f"{random_unused_letter.upper()} is not in the word")
+    print(f"{random_unused_letter} is not in the word")
 
 def easy_mode(word, category):
     play_game(word, category, max_attempts = float("inf"))
