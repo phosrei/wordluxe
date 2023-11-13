@@ -54,13 +54,13 @@ class WordluxeGame(QMainWindow):
         main_buttons_layout.addWidget(quit_button)
         main_buttons_layout.setAlignment(Qt.AlignCenter)
 
-        additional_text = QLabel("The new, and \nimproved wordle!", main_menu_frame)
-        additional_text.setObjectName("heading")
-        additional_text.setAlignment(Qt.AlignCenter)
+        heading = QLabel("The new, and \nimproved wordle!", main_menu_frame)
+        heading.setObjectName("heading")
+        heading.setAlignment(Qt.AlignCenter)
 
         main_layout.addWidget(game_logo)
         main_layout.addSpacing(60) 
-        main_layout.addWidget(additional_text)
+        main_layout.addWidget(heading)
         main_layout.addSpacing(60)
         main_layout.addLayout(main_buttons_layout)
 
