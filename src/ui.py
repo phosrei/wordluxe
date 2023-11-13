@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 import cairosvg
 import random
 from wordluxe import wordbank_cat
@@ -9,11 +10,20 @@ game.attributes("-fullscreen", True)
 game.title("Wordluxe")
 game.iconbitmap("assets/game_icon.ico")
 
+GREEN = "#6ca965"
+YELLOW = "#c8b653"
+GRAY = "#787c7f"
+
 category_str = tk.StringVar(value="")
 difficulty_str = tk.StringVar(value="")
 category = ""
 difficulty = ""
-attempts = 0
+current_guess_str = ""
+current_guess = []
+wordtile_labels = []
+letter_count = 0
+max_attempts_var = 0
+attempts = 1
 
 def play_button_clicked():
     main_menu.place_forget()
@@ -46,7 +56,10 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
     word = random.choice(wordbank_cat[category][difficulty])
     update_word_tiles()
 
+    global max_attempts_var
     global attempts
+
+    max_attempts_var = max_attempts
 
     difficulty_menu.place_forget()
     ingame_menu.place(relx = 0, 
@@ -54,36 +67,12 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
                         relwidth = 1, 
                         relheight = 1)
     bg_label4.place(x=-400, y=-2)
-
-    wt_image = ImageTk.PhotoImage(file="assets/tile.png")
-    while attempts < max_attempts:
-        rely_value = 0.125 + attempts * 0.0935
-        for j in range(len(word)):
-            if len(word) == 4:
-                relx_value = 0.413 + j * 0.0585
-            elif len(word) == 5:
-                relx_value = 0.3834 + j * 0.0585
-            elif len(word) == 6:
-                relx_value = 0.3541 + j * 0.0585
-            elif len(word) == 7:
-                relx_value = 0.3254 + j * 0.0585
-
-            word_tile = tk.Label(
-                master=ingame_menu,
-                image=wt_image,
-                borderwidth=0,
-                border=0,
-                width=75,
-                height=75,
-                bg="Steel Blue"
-            )
-            word_tile.place(relx=relx_value, 
-                            rely=rely_value, 
-                            anchor="center")
-
-        attempts += 1
+    starting_tiles_frame.place(relx=0.501,
+                           rely=0.353,
+                           anchor='center')
     
     if len(word) == 4:
+        tiles4_label.grid()
         letter_eraser.place(relx=0.67, 
                         rely=0.125, 
                         anchor="center")
@@ -94,6 +83,7 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
                   rely=0.345, 
                   anchor="center")
     elif len(word) == 5:
+        tiles5_label.grid()
         letter_eraser.place(relx=0.70, 
                         rely=0.125, 
                         anchor="center")
@@ -104,6 +94,7 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
                   rely=0.345, 
                   anchor="center")
     elif len(word) == 6:
+        tiles6_label.grid()
         letter_eraser.place(relx=0.73, 
                         rely=0.125, 
                         anchor="center")
@@ -114,6 +105,7 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
                   rely=0.345, 
                   anchor="center")
     elif len(word) == 7:
+        tiles7_label.grid()
         letter_eraser.place(relx=0.76, 
                         rely=0.125, 
                         anchor="center")
@@ -123,7 +115,7 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
         reveal_vowel.place(relx=0.76, 
                   rely=0.345, 
                   anchor="center")
-
+    
 # Main Menu Frame
 main_menu = tk.Frame(game)
 main_menu.place(relx = 0, 
@@ -408,6 +400,10 @@ reveal_vowel = tk.Button(master = ingame_menu,
                         bg = "#28506d",
                         command = "")
 
+lettervar = tk.StringVar()
+guess_input = tk.Entry(textvariable=lettervar, master=ingame_menu, font=("Helvetica", 20), justify="center")
+guess_input.place(relx=0.5,rely=0.675,width=200,height=70,anchor="center")
+
 keyboard_layout = [
     'QWERTYUIOP',
     'ASDFGHJKL',
@@ -416,7 +412,7 @@ keyboard_layout = [
 
 # Create and place the keyboard buttons
 keyboard_frame = tk.Frame(ingame_menu, background="#216061")
-keyboard_frame.place(relx=0.5, rely=0.825, anchor="center")
+keyboard_frame.place(relx=0.5, rely=0.84, anchor="center")
 
 for row, key_row in enumerate(keyboard_layout, 1):
     for col, char in enumerate(key_row):
@@ -427,52 +423,117 @@ for row, key_row in enumerate(keyboard_layout, 1):
         else:
             column_span = 1
 
-        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=2, height=1, command=lambda c=char: show_letter_tile(c))
+        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=2, height=1, command=lambda c=char: show_letter_in_guess(c))
         button.grid(row=row, column=col, padx=2, pady=2, columnspan=column_span)
 
-letter_count = 0
-
-word_tile_labels = []  # List to store references to the labels
-
-def show_letter_tile(char):
-    global letter_count
+def show_letter_in_guess(char):
     global attempts
+    current_text = lettervar.get()
 
-    if char == "⌫":
-        if word_tile_labels:
-            last_label = word_tile_labels.pop()
-            last_label.place_forget()
-            letter_count -= 1
-    elif char == "↵":
-        pass
+    if guess_input["state"] == "normal":
+        if char == "⌫":
+            new_text = current_text[:-1]
+            lettervar.set(new_text)
+        elif char == "↵":
+            check_guess()
+        else:
+            char = char.lower()
+            lettervar.set(current_text + char)
+
+starting_tiles_frame = tk.Frame(ingame_menu)
+
+tiles_4 = ImageTk.PhotoImage(file = "assets/tiles_4.png")
+tiles_5 = ImageTk.PhotoImage(file = "assets/tiles_5.png")
+tiles_6 = ImageTk.PhotoImage(file = "assets/tiles_6.png")
+tiles_7 = ImageTk.PhotoImage(file = "assets/tiles_7.png")
+
+tiles4_label = tk.Label(master = starting_tiles_frame, 
+                        image=tiles_4,
+                        border=0,
+                        width=334,
+                        height=503)
+
+tiles5_label = tk.Label(master = starting_tiles_frame, 
+                        image=tiles_5,
+                        border=0,
+                        width=422,
+                        height=505)
+
+tiles6_label = tk.Label(master = starting_tiles_frame, 
+                        image=tiles_6,
+                        border=0,
+                        width=507,
+                        height=339)
+
+tiles7_label = tk.Label(master = starting_tiles_frame, 
+                        image=tiles_7,
+                        border=0,
+                        width=591,
+                        height=254)
+
+def place_word_tile(i, letter, attempts):
+    global wordtile_labels
+
+    wordtile_label = tk.Label(
+        master=starting_tiles_frame,
+        text=letter.upper(),
+        font=("Helvetica", 30, "bold"),
+        borderwidth=0,
+        border=0,
+        width=2,
+        height=1,
+        bg="Steel Blue"
+    )
+    
+    wordtile_labels.append(wordtile_labels)
+
+    if len(word) == 4:
+        wordtile_label.place(relx=0.05, x=i * 84.28, rely=-0.134, y=(attempts - 1) * 84.4)
+    elif len(word) == 5:
+        wordtile_label.place(relx=0.04, x=i * 84.4, rely=-0.132, y=(attempts - 1) * 84.5)
+    elif len(word) == 6:
+        wordtile_label.place(relx=0.031, x=i * 84.4, rely=-0.190, y=(attempts - 1) * 84.5)
+    elif len(word) == 7:
+        wordtile_label.place(relx=0.027, x=i * 84.4, rely=-0.26, y=(attempts - 1) * 84.5)
+
+    if letter == word[i]:
+        wordtile_label.config(fg=GREEN)
+    elif letter in word and not letter == word[i]:
+        wordtile_label.config(fg=YELLOW)
+    elif letter not in word:
+        wordtile_label.config(fg="seashell4")
+
+def place_word_tiles_one_by_one(i, guess, attempts):
+    if i < len(guess):
+        place_word_tile(i, guess[i], attempts)
+        game.after(250, place_word_tiles_one_by_one, i + 1, guess, attempts)
+
+def check_guess():
+    global word
+    global attempts
+    global wordtile_labels
+
+    guess = guess_input.get()
+    attempts += 1
+
+    if attempts <= max_attempts_var:
+        if len(guess) == len(word):
+            if guess == word:
+                place_word_tiles_one_by_one(0, guess, attempts)
+                ingame_menu.after(1000, lambda: messagebox.showinfo("You win!", f"The word was '{word}'."))
+                guess_input.delete(0, tk.END)
+                guess_input.config(state="readonly")
+            else:
+                place_word_tiles_one_by_one(0, guess, attempts)
+                guess_input.delete(0, tk.END)
+        else:
+            messagebox.showerror("Error", "Guess must be the same length as the word.")
+            attempts -= 1
     else:
-        if len(word) == 4:
-            relx_value = 0.413 + (letter_count % len(word)) * 0.0585
-        elif len(word) == 5:
-            relx_value = 0.3834 + (letter_count % len(word)) * 0.0585
-        elif len(word) == 6:
-            relx_value = 0.3541 + (letter_count % len(word)) * 0.0585
-        elif len(word) == 7:
-            relx_value = 0.3254 + (letter_count % len(word)) * 0.0585
-        rely_value = 0.125 + (letter_count // len(word)) * 0.0935
-
-        word_tile_letter = tk.Label(
-            master=ingame_menu,
-            text=char,
-            font=("Arial", 30, "bold"),
-            borderwidth=0,
-            border=0,
-            width=2,
-            height=1,
-            bg="Steel Blue"
-        )
-        word_tile_letter.place(relx=relx_value, rely=rely_value, anchor="center")
-        word_tile_labels.append(word_tile_letter)
-
-        letter_count += 1
-
-        if letter_count % len(word) == 0:
-            attempts += 1
+        place_word_tiles_one_by_one(0, guess, attempts)
+        ingame_menu.after(1000, lambda: messagebox.showerror("You Lose!", f"The word was '{word}'."))
+        guess_input.delete(0, tk.END)
+        guess_input.config(state="readonly")
 
 def update_word_tiles():
     for widget in ingame_menu.winfo_children():
