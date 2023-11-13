@@ -379,17 +379,13 @@ diff_desc.place(relx=0.5,
                 anchor="center")
 
 # Power-up icons
-
-#LETTER ERASER
 letter_eraser_image = ImageTk.PhotoImage(file = "assets/letter_eraser.png", width=75, height=75)
-
 class HoverButton1(tk.Button):
     def __init__(self, master=None, **kwargs):
         tk.Button.__init__(self, master, **kwargs)
         self.tooltip = None
         self.bind("<Enter>", self.hover_click)
-        self.bind("<Leave>", self.leave)
-        
+        self.bind("<Leave>", self.leave)      
     def hover_click(self, event):
         letter_eraser = tk.Button(master = ingame_menu,
                         image = letter_eraser_image,
@@ -407,12 +403,13 @@ class HoverButton1(tk.Button):
                         self.tooltip.wm_geometry(f"+{x}+{y}")
 
                         label = tk.Label(self.tooltip,
-                                text="this can reveal a letter",
-                                borderwidth=10, bg='#2c4774',
-                                highlightbackground='white',
-                                 highlightcolor='white')
+                                text="Letter Eraser \n \nCost: 1 coin \n \nRemoves a letter that isn't included in the word.",
+                                font=("Helvetica", 12, "italic"),
+                                border=1, 
+                                justify="left",
+                                bg="Steel Blue",
+                                fg="White")
                         label.pack(ipadx=10, ipady=10)
-
     def leave(self, event):
         letter_eraser.config(borderwidth=0, text="")
         if self.tooltip:
@@ -426,10 +423,7 @@ letter_eraser = HoverButton1(master = ingame_menu,
                         command = "")
 letter_eraser.pack()
 
-#INVINCIBILITY
-
 invincible_image = ImageTk.PhotoImage(file = "assets/invincible.png")
-
 class lEButton(tk.Button):
     def __init__(self, master=None, **kwargs):
         tk.Button.__init__(self, master, **kwargs)
@@ -454,12 +448,12 @@ class lEButton(tk.Button):
                         self.tooltip.wm_geometry(f"+{x}+{y}")
 
                         label = tk.Label(self.tooltip,
-                                text="this can save you from losing an attempt",
-                                borderwidth=10, bg='#2c4774',
-                                highlightbackground='white',
-                                 highlightcolor='white')
+                                text="Invincibility \n \nCost: 2 coins \n \nSaves you from losing an attempt if your guess is incorrect.",
+                                font=("Helvetica", 12, "italic"), 
+                                justify="left",
+                                bg="Steel Blue",
+                                fg="White")
                         label.pack(ipadx=10, ipady=10)
-
     def leave(self, event):
         letter_eraser.config(borderwidth=0, text="")
         if self.tooltip:
@@ -473,16 +467,7 @@ invincible = lEButton(master = ingame_menu,
                     command = "")
 invincible.pack()
 
-#REVEALVOWEL
-
 vowel_image = ImageTk.PhotoImage(file = "assets/vowel.png")
-reveal_vowel = tk.Button(master = ingame_menu,
-                        image = vowel_image,
-                        borderwidth = 0,
-                        state = "normal",
-                        bg = "#28506d",
-                        command = "")
-
 class RVButton(tk.Button):
     def __init__(self, master=None, **kwargs):
         tk.Button.__init__(self, master, **kwargs)
@@ -507,10 +492,11 @@ class RVButton(tk.Button):
                         self.tooltip.wm_geometry(f"+{x}+{y}")
 
                         label = tk.Label(self.tooltip,
-                                text="this can reveal a vowel",
-                                borderwidth=10, bg='#2c4774',
-                                highlightbackground='white',
-                                 highlightcolor='white')
+                                text="Reveal Vowels \n \nCost: 3 coins \n \nReveals all the vowels in the word.",
+                                font=("Helvetica", 12, "italic"), 
+                                justify="left",
+                                bg="Steel Blue",
+                                fg="White")
                         label.pack(ipadx=10, ipady=10)
 
     def leave(self, event):
@@ -526,6 +512,7 @@ reveal_vowel = RVButton(master = ingame_menu,
                         command = "")
 reveal_vowel.pack()
 
+# Keyboard
 lettervar = tk.StringVar()
 guess_input = tk.Entry(textvariable=lettervar, master=ingame_menu, font=("Helvetica", 20), justify="center")
 guess_input.place(relx=0.5,rely=0.67,width=200,height=70,anchor="center")
@@ -536,7 +523,6 @@ keyboard_layout = [
     '⌫ZXCVBNM↵'
 ]
 
-# Create and place the keyboard buttons
 keyboard_frame = tk.Frame(ingame_menu, background="#216061")
 keyboard_frame.place(relx=0.5, rely=0.84, anchor="center")
 
@@ -549,10 +535,10 @@ for row, key_row in enumerate(keyboard_layout, 1):
         else:
             column_span = 1
 
-        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=2, height=1, command=lambda c=char: show_letter_in_guess(c))
+        button = tk.Button(keyboard_frame, text=char, borderwidth=0.5, bg="#2a4c71", fg="Steel Blue", font=("Arial", 30, "bold"), width=2, height=1, command=lambda c=char: keyboard_letter(c))
         button.grid(row=row, column=col, padx=2, pady=2, columnspan=column_span)
 
-def show_letter_in_guess(char):
+def keyboard_letter(char):
     global attempts
     current_text = lettervar.get()
 
