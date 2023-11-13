@@ -1,8 +1,9 @@
 import tkinter as tk
-from tkinter import messagebox
+import pycountry
 import cairosvg
 import random
-import time
+from nltk.corpus import words
+from tkinter import messagebox
 from wordluxe import wordbank_cat
 from PIL import ImageTk, Image
 
@@ -15,6 +16,7 @@ GREEN = "#6ca965"
 YELLOW = "#c8b653"
 GRAY = "#787c7f"
 
+dictionary = set(words.words())
 category_str = tk.StringVar(value="")
 difficulty_str = tk.StringVar(value="")
 category = ""
@@ -97,24 +99,24 @@ def difficulty_button_clicked(chosen_difficulty, difficulty_var, max_attempts):
     elif len(word) == 6:
         tiles6_label.grid()
         letter_eraser.place(relx=0.73, 
-                        rely=0.125, 
+                        rely=0.225, 
                         anchor="center")
         invincible.place(relx=0.73, 
-                  rely=0.235, 
+                  rely=0.335, 
                   anchor="center")
         reveal_vowel.place(relx=0.73, 
-                  rely=0.345, 
+                  rely=0.445, 
                   anchor="center")
     elif len(word) == 7:
         tiles7_label.grid()
         letter_eraser.place(relx=0.76, 
-                        rely=0.125, 
+                        rely=0.255, 
                         anchor="center")
         invincible.place(relx=0.76, 
-                  rely=0.235, 
+                  rely=0.355, 
                   anchor="center")
         reveal_vowel.place(relx=0.76, 
-                  rely=0.345, 
+                  rely=0.455, 
                   anchor="center")
     
 # Main Menu Frame
@@ -403,7 +405,7 @@ reveal_vowel = tk.Button(master = ingame_menu,
 
 lettervar = tk.StringVar()
 guess_input = tk.Entry(textvariable=lettervar, master=ingame_menu, font=("Helvetica", 20), justify="center")
-guess_input.place(relx=0.5,rely=0.675,width=200,height=70,anchor="center")
+guess_input.place(relx=0.5,rely=0.67,width=200,height=70,anchor="center")
 
 keyboard_layout = [
     'QWERTYUIOP',
@@ -474,6 +476,7 @@ tiles7_label = tk.Label(master = starting_tiles_frame,
 
 def place_word_tile(i, letter, attempts):
     global wordtile_labels
+    global guess
 
     wordtile_label = tk.Label(
         master=starting_tiles_frame,
@@ -499,10 +502,11 @@ def place_word_tile(i, letter, attempts):
 
     if letter == word[i]:
         wordtile_label.config(fg=GREEN)
-    elif letter in word and not letter == word[i]:
+
+    if letter in word and not letter == word[i]:
         wordtile_label.config(fg=YELLOW)
     elif letter not in word:
-        wordtile_label.config(fg="seashell4")
+        wordtile_label.config(fg=GRAY)
 
 def place_word_tiles_one_by_one(i, guess, attempts):
     if i < len(guess):
@@ -511,11 +515,21 @@ def place_word_tiles_one_by_one(i, guess, attempts):
 
 def check_guess():
     global word
+    global guess
     global attempts
     global wordtile_labels
 
     guess = guess_input.get()
     attempts += 1
+
+    if category not in ["songs", "artists", "sports", "countries"]:
+        if guess.lower() not in dictionary:
+            messagebox.showerror("Error",f"'{guess}' is not a word.")
+            attempts -= 1
+    elif category == "countries":
+        if pycountry.countries.get(name=guess) is None:
+            messagebox.showerror("Error",f"'{guess}' is not a valid country.")
+            attempts -= 1
 
     if attempts <= max_attempts_var:
         if len(guess) == len(word):
@@ -528,13 +542,19 @@ def check_guess():
                 place_word_tiles_one_by_one(0, guess, attempts)
                 guess_input.delete(0, tk.END)
         else:
-            messagebox.showerror("Error", "Guess must be the same length as the word.")
-            attempts -= 1
+            if len(guess) != len(word):
+                print(f"Guess should be {len(word)} letters.")
+                messagebox.showerror("Error",f"Guess should be {len(word)} letters.")
+                attempts -= 1
     else:
-        place_word_tiles_one_by_one(0, guess, attempts)
-        ingame_menu.after(1000, lambda: messagebox.showerror("You Lose!", f"The word was '{word}'."))
-        guess_input.delete(0, tk.END)
-        guess_input.config(state="readonly")
+        if len(guess) != len(word):
+                print(f"Guess should be {len(word)} letters.")
+                messagebox.showerror("Error",f"Guess should be {len(word)} letters.")
+        else:
+            place_word_tiles_one_by_one(0, guess, attempts)
+            ingame_menu.after(1000, lambda: messagebox.showerror("You Lose!", f"The word was '{word}'."))
+            guess_input.delete(0, tk.END)
+            guess_input.config(state="readonly")
 
 def update_word_tiles():
     for widget in ingame_menu.winfo_children():
