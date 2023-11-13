@@ -5,6 +5,12 @@ QPushButton {
     font-family: Inter;
 }
 
+#cat_text {
+    font-size: 32px;
+    font-family: Georgia;
+    color: white;
+}
+
 #button {
     background-color: #fff;
 }
@@ -13,12 +19,8 @@ QPushButton {
     background-image:url(assets/background1.png);
 }
 
-#gcframe {
+#gframe {
     background-image: url(assets/background1.png);
-}
-
-#gencat {
-    background-image:url(assets/background1.png);
 }
 
 #quitButton {

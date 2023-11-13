@@ -4,12 +4,13 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt
+
 class WordluxeGame(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.setWindowIcon(QIcon("assets/game_icon.ico"))
         self.setWindowTitle("Wordluxe")
-        self.showFullScreen()
 
         self.stacked_widget = QStackedWidget(self)
         self.setup_ui()
@@ -20,6 +21,8 @@ class WordluxeGame(QMainWindow):
 
         QApplication.instance().setStyleSheet(self.stylesheet)
 
+        self.showFullScreen()
+
     def setup_ui(self):
         self.setup_main_menu_page()
         self.setup_second_page()
@@ -29,9 +32,11 @@ class WordluxeGame(QMainWindow):
         main_menu_frame.setGeometry(0, 0, self.width(), self.height())
         main_menu_frame.setObjectName("mmframe")
 
-        game_logo = QSvgWidget("assets/game_logo.svg", parent=main_menu_frame)
-        game_logo.resize(game_logo.renderer().defaultSize())
-        game_logo.move((main_menu_frame.width() - game_logo.width()) // 2, 300)
+        main_layout = QVBoxLayout(main_menu_frame)
+        main_layout.setAlignment(Qt.AlignCenter)
+
+        game_logo = QSvgWidget("assets/game_logo.svg", main_menu_frame)
+        game_logo.setFixedSize(game_logo.sizeHint())
 
         play_button = QPushButton("Play", main_menu_frame, objectName="button")
         play_button.setFixedWidth(240)
@@ -45,46 +50,57 @@ class WordluxeGame(QMainWindow):
 
         button_layout = QHBoxLayout()
         button_layout.addWidget(play_button)
-        button_layout.addSpacerItem(QSpacerItem(30, 30))
+        button_layout.addSpacing(30)
         button_layout.addWidget(quit_button)
         button_layout.setAlignment(Qt.AlignCenter)
-        button_layout.setContentsMargins(0, int(self.height() * 0.1), 0, 0)
-        main_menu_frame.setLayout(button_layout)
+        button_layout.setContentsMargins(0, int(self.height() * .3), 0, 0)
+
+        main_layout.addWidget(game_logo)
+        main_layout.addLayout(button_layout)
 
         self.stacked_widget.addWidget(main_menu_frame)
 
     def setup_second_page(self):
-        gencat_frame = QFrame(self.stacked_widget)
-        gencat_frame.setGeometry(0, 0, self.width(), self.height())
-        gencat_frame.setObjectName("gcframe")
+        gen_frame = QFrame(self.stacked_widget)
+        gen_frame.setGeometry(0, 0, self.width(), self.height())
+        gen_frame.setObjectName("gframe")
 
-        button_names = ["General", "Countries", "Fruits", "Sports", "Animals", "Artists", "Songs"]
-
-        self.create_buttons(button_names, gencat_frame, 250)
-        self.stacked_widget.addWidget(gencat_frame)
-
-    def create_buttons(self, names, parent_frame, left_margin):
         layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignVCenter)
+        layout.setAlignment(Qt.AlignCenter)
 
-        for name in names:
-            button = QPushButton(name, parent_frame)
-            button.setFixedWidth(240)
+        text_label = QLabel("Choose category", gen_frame)
+        text_label.setObjectName("cat_text")
+        text_label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(text_label)
+        layout.addSpacing(50)
+
+        cat_buttons = ["General", "Countries", "Fruits", "Sports", "Animals", "Artists", "Songs"]
+
+        self.create_buttons(layout, cat_buttons , gen_frame)
+        self.stacked_widget.addWidget(gen_frame)
+
+    def setup_third_page(self):
+        gen_frame = QFrame(self.stacked_widget)
+        gen_frame.setGeometry(0, 0, self.width(), self.height())
+        gen_frame.setObjectName("dframe")
+
+    def create_buttons(self, layout, buttons, parent_frame):
+        for button in buttons:
+            button = QPushButton(button, parent_frame)
+            button.setFixedWidth(260)
             button.setCursor(Qt.PointingHandCursor)
             button.setObjectName("button")
             layout.addWidget(button)
             layout.addSpacing(15)
 
-        layout.setContentsMargins(left_margin, 0, 0, 0)
-
         parent_frame.setLayout(layout)
-        self.setWindowIcon(QIcon("assets/game_icon.ico"))
 
     def play_button_pressed(self):
         self.stacked_widget.setCurrentIndex(1)
 
     def quit_button_pressed(self):
         self.close()
+       
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
