@@ -5,6 +5,12 @@ QPushButton {
     font-family: Inter;
 }
 
+#heading {
+    font-size: 32px;
+    font-family: Georgia;
+    color: white;
+}
+
 #cat_text {
     font-size: 32px;
     font-family: Georgia;
@@ -15,27 +21,31 @@ QPushButton {
     background-color: #fff;
 }
 
-#mmframe {
-    background-image:url(assets/background1.png);
+#extremeButton {
+    background-color: #9A3E3E;
+    color: #fff;
 }
 
-#gframe {
-    background-image: url(assets/background1.png);
+#mmframe, #cframe, #dframe, #gframe {
+    background-image:url(assets/background1.png);
 }
 
 #quitButton {
     border: 2px solid white;
     background-color: transparent;
-    color: white;
+    color: #fff;
 }
 
-QPushButton:hover {
-    background-color: #eee;
-    border: 1px solid #ccc;
+#extremebutton {
+    background-color: #9A3E3E;
 }
 
 #button:hover {
     background-color: #e6e6e6;
+}
+
+#extremeButton:hover {
+    background-color: #8F3939;
 }
 
 #quitButton:hover {
