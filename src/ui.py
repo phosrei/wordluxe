@@ -135,7 +135,7 @@ class WordluxeGame(QMainWindow):
                     label_width,
                     label_height
                 )
-                label.setStyleSheet('QLabel {font-family: Inter; font-weight: bold; font-size: 48px; color: black; background-color: transparent; border: 2px solid grey;}')
+                label.setObjectName("grid")
                 row_labels.append(label)
 
             self.board.append(row_labels)
@@ -147,7 +147,7 @@ class WordluxeGame(QMainWindow):
 
         key_function_mapping = {
             Qt.Key_Escape: self.close,
-            Qt.Key_Return: self.process_guess,
+            Qt.Key_Return: self.check_guess,
             Qt.Key_Backspace: self.do_backspace,
             Qt.Key_F3: self.show_answer
         }
@@ -174,7 +174,7 @@ class WordluxeGame(QMainWindow):
     def show_answer(self):
         QMessageBox.information(self, 'Answer', self.word)
 
-    def process_guess(self):
+    def check_guess(self):
         if not self.validate():
             print('Invalid word:', self.guess)
             for i in range(5):
@@ -214,22 +214,22 @@ class WordluxeGame(QMainWindow):
 
         parent.setLayout(layout)
 
+    def load_word(self, fname):
+        with open(fname, 'r') as f:
+            self.words = list(map(str.strip, f.read().split('\n')))
+
     def play_button_pressed(self):
         self.stacked_widget.setCurrentIndex(1)
 
-    def quit_button_pressed(self):
-        self.close()
-    
     def cat_buttons_pressed(self):
         self.stacked_widget.setCurrentIndex(2)
 
     def dif_buttons_pressed(self):
         self.stacked_widget.setCurrentIndex(3)
 
-    def load_word(self, fname):
-        with open(fname, 'r') as f:
-            self.words = list(map(str.strip, f.read().split('\n')))
-       
+    def quit_button_pressed(self):
+        self.close()
+        
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     game_instance = WordluxeGame("src/5word.txt")

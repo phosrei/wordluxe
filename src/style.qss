@@ -30,6 +30,14 @@ QPushButton {
     background-image:url(assets/background1.png);
 }
 
+#grid {
+    font-family: Inter; 
+    font-weight: bold; 
+    font-size: 48px; 
+    color: black; 
+    background-color: transparent; border: 2px solid grey;
+}
+
 #quitButton {
     border: 2px solid white;
     background-color: transparent;
