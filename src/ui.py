@@ -10,6 +10,15 @@ import random
 class WordluxeGame(QMainWindow):
 
     DICTIONARY = set(words.words())
+    WORDBANK_CAT = {
+    "general": categories["general"],
+    "countries": categories["countries"],
+    "animals": categories["animals"],
+    "fruits": categories["fruits"],
+    "sports": categories["sports"],
+    "artists": categories["artists"],
+    "songs": categories["songs"]
+    }
 
     def __init__(self, word_file):
         super().__init__()
