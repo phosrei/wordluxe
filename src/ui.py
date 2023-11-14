@@ -3,9 +3,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt
+from nltk.corpus import words
+from wordbank import categories
 import random
 
 class WordluxeGame(QMainWindow):
+
+    DICTIONARY = set(words.words())
+
     def __init__(self, word_file):
         super().__init__()
 
@@ -17,7 +22,6 @@ class WordluxeGame(QMainWindow):
         self.showFullScreen()
         self.load_word(word_file)
         self.setup_ui()
-
 
         with open('src/style.qss', 'r') as f:
             self.stylesheet = f.read()
@@ -41,20 +45,22 @@ class WordluxeGame(QMainWindow):
         game_logo = QSvgWidget("assets/game_logo.svg", main_menu_frame)
         game_logo.setFixedSize(game_logo.sizeHint())
 
+        main_buttons_layout = QHBoxLayout()
+
         play_button = QPushButton("Play", main_menu_frame, objectName="button")
         play_button.setFixedWidth(240)
         play_button.clicked.connect(self.play_button_pressed)
         play_button.setCursor(Qt.PointingHandCursor)
+        main_buttons_layout.addWidget(play_button)
 
+        main_buttons_layout.addSpacing(30)
+        
         quit_button = QPushButton("Quit", main_menu_frame, objectName="quitButton")
         quit_button.setFixedWidth(240)
         quit_button.clicked.connect(self.quit_button_pressed)
         quit_button.setCursor(Qt.PointingHandCursor)
-
-        main_buttons_layout = QHBoxLayout()
-        main_buttons_layout.addWidget(play_button)
-        main_buttons_layout.addSpacing(30)
         main_buttons_layout.addWidget(quit_button)
+
         main_buttons_layout.setAlignment(Qt.AlignCenter)
 
         heading = QLabel("The new, and \nimproved wordle!", main_menu_frame)
@@ -84,7 +90,7 @@ class WordluxeGame(QMainWindow):
         cat_layout.addSpacing(30)
 
         buttons = ["General", "Countries", "Fruits", "Sports", "Animals", "Artists", "Songs"]
-
+            
         self.create_buttons(cat_layout, buttons, cat_frame, self.cat_buttons_pressed)
         self.stacked_widget.addWidget(cat_frame)
 
@@ -147,7 +153,7 @@ class WordluxeGame(QMainWindow):
 
         key_function_mapping = {
             Qt.Key_Escape: self.close,
-            Qt.Key_Return: self.check_guess,
+            Qt.Key_Return: self.validate,
             Qt.Key_Backspace: self.do_backspace,
             Qt.Key_F3: self.show_answer
         }
@@ -156,10 +162,6 @@ class WordluxeGame(QMainWindow):
             key_function_mapping[event.key()]()
         elif event.text().isalpha():
             self.add_letter(event.text().upper())
-
-    def validate(self):
-        print('Validate:', self.guess, self.guess in self.words)
-        return self.guess in self.words
 
     def add_letter(self, key):
         if len(self.guess) < 5:
@@ -174,31 +176,40 @@ class WordluxeGame(QMainWindow):
     def show_answer(self):
         QMessageBox.information(self, 'Answer', self.word)
 
-    def check_guess(self):
-        if not self.validate():
-            print('Invalid word:', self.guess)
-            for i in range(5):
+    def validate(self):
+        guess_lower = self.guess.lower()
+        if guess_lower not in self.DICTIONARY:
+            for _ in range(5):
                 self.do_backspace()
         else:
-            for j in range(len(self.guess)):
-                if self.guess[j] == self.word[j]:
-                    self.board[self.num_guess][j].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
-                elif self.guess[j] in self.word:
-                    self.board[self.num_guess][j].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px}')
-                else:
-                    self.board[self.num_guess][j].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px}')
+            self.check_guess()
 
+    def check_guess(self):
+        length = len(self.word)
+        output = ["X"] * length
+        word = self.word
 
-            if self.num_guess == 5 or self.word == self.guess:
-                self.show_answer()
+        for i in range(length):
+            if self.guess[i] == word[i]:
+                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
+                word = word.replace(self.guess[i], "X", 1)
+
+        for i in range(length):
+            if self.guess[i] in word and output[i] == "X":
+                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px}')
+                word = word.replace(self.guess[i], "X", 1)
+            elif self.guess[i] in output[i]:
+                continue
             else:
-                self.num_guess += 1
-                self.guess = ''
-                print('num_guess:', self.num_guess)
+                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px}')
 
+        if self.num_guess == 5 or self.word == self.guess:
+            self.show_answer()
+        else:
+            self.num_guess += 1
+            self.guess = ''
 
     def create_buttons(self, layout, buttons, parent, function):
-
         for button in buttons:
             button = QPushButton(button, parent)
             button.setFixedWidth(260)
@@ -213,7 +224,6 @@ class WordluxeGame(QMainWindow):
             layout.addSpacing(15)
 
         parent.setLayout(layout)
-
     def load_word(self, fname):
         with open(fname, 'r') as f:
             self.words = list(map(str.strip, f.read().split('\n')))

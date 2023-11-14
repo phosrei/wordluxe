@@ -192,9 +192,9 @@ def end_options(word, category, max_attempts):
 
 def main():
     cat_input = validate_input("Choose category: ", categories)
-    dif_input = validate_input("Choose difficulty: ", categories.get("general"))
+    dif_input = validate_input("Choose difficulty: ", categories["general"])
 
-    word = random.choice(wordbank_cat[cat_input][dif_input])
+    word = random.choice(list(wordbank_cat[cat_input][dif_input]))
 
     game_modes = {
         "easy": easy_mode,
