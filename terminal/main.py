@@ -98,17 +98,17 @@ def play_game(word, category, max_attempts):
 
 def check_guess(guess, word):
     length = len(word)
-    output = ["X"] * length
+    output = ["-"] * length
 
     for i in range(length):
         if guess[i] == word[i]:
             output[i] = colored(guess[i], 'green')
-            word = word.replace(guess[i], "X", 1)
+            word = word.replace(guess[i], "-", 1)
 
     for i in range(length):
         if guess[i] in word and output[i] == "X":
             output[i] = colored(guess[i], 'yellow')
-            word = word.replace(guess[i], "X", 1)
+            word = word.replace(guess[i], "-", 1)
         elif guess[i] in output[i]:
             continue
         else:
