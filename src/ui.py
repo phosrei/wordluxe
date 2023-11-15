@@ -17,16 +17,12 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
         self.showFullScreen()
-        self.setup_pages()
+        self.setup_main_menu_page()
 
         with open(STYLE_FILE_PATH, 'r') as f:
             self.stylesheet = f.read()
 
         QApplication.instance().setStyleSheet(self.stylesheet)
-
-    def setup_pages(self):
-        for page in SETUP_PAGES:
-            getattr(self, page)()
 
     def setup_main_menu_page(self):
         main_menu_frame = self.create_frame("mmframe")
@@ -77,7 +73,7 @@ class WordluxeGame(QMainWindow):
         label.setObjectName("cat_text")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
-        layout.addSpacing(CAT_DIF_LAYOUT_SPACING)
+        layout.addSpacing(TEXT_SPACING)
 
         self.create_buttons(layout, buttons, frame, function)
 
@@ -91,11 +87,13 @@ class WordluxeGame(QMainWindow):
         grid_layout = QGridLayout()
         
         grid_frame = QFrame(game_frame)
-        grid_frame.setFixedSize(GRID_FRAME_WIDTH, GRID_FRAME_HEIGHT)
-
+        grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
+        grid_frame_height = GRID_ROWS * (BOX_HEIGHT + GAP_SIZE)
+        grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
+        
         for i in range(GRID_ROWS):
             row_labels = []
-            for j in range(GRID_COLUMNS):
+            for j in range(len(self.word)):
                 grid_label = QLabel(' ')
                 grid_label.setAlignment(Qt.AlignCenter)
                 grid_label.setObjectName("grid")
@@ -126,7 +124,7 @@ class WordluxeGame(QMainWindow):
             self.add_letter(event.text().upper())
             
     def add_letter(self, key):
-        if len(self.guess) < 5:
+        if len(self.guess) < len(self.word):
             self.board[self.num_guess][len(self.guess)].setText(key)
             self.guess += key
 
@@ -156,6 +154,9 @@ class WordluxeGame(QMainWindow):
                 self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
                 output[i] = self.guess[i]
                 word = word.replace(self.guess[i], "-", 1)
+            else:
+                for _ in range(length):
+                    self.do_backspace()
 
         for i in range(length):
             if self.guess[i] in word and output[i] == "-":
@@ -174,10 +175,6 @@ class WordluxeGame(QMainWindow):
             self.num_guess += 1
             self.guess = ''
 
-    def load_word(self, fname):
-        with open(fname, 'r') as f:
-            self.words = list(map(str.strip, f.read().split('\n')))
-
     def create_buttons(self, layout, buttons, parent, function):
         for button in buttons:
             button = self.create_button(button, parent, function)
@@ -189,23 +186,25 @@ class WordluxeGame(QMainWindow):
         parent.setLayout(layout)
 
     def play_button_pressed(self):
+        self.setup_second_page()
         self.stacked_widget.setCurrentIndex(1)
 
     def cat_buttons_pressed(self):
-        self.stacked_widget.setCurrentIndex(2)
         global CATEGORY
-        CATEGORY = self.sender().text()
+        CATEGORY = self.sender().text().lower()
+        self.setup_third_page()
+        self.stacked_widget.setCurrentIndex(2)
         
     def dif_buttons_pressed(self):
-        self.stacked_widget.setCurrentIndex(3)
         global DIFFICULTY
-        DIFFICULTY = self.sender().text()
+        DIFFICULTY = self.sender().text().lower()
         self.load_word_bank()
+        self.stacked_widget.setCurrentIndex(3)
 
     def load_word_bank(self):
         if CATEGORY and DIFFICULTY:
-            self.words = WORDBANK_CAT[CATEGORY.lower()][DIFFICULTY.lower()]
-            self.word = random.choice(list(self.words)).upper()
+            self.word = random.choice(list(WORDBANK_CAT[CATEGORY][DIFFICULTY])).upper()
+            self.setup_game_page()
             
     def quit_button_pressed(self):
         self.close()
