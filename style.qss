@@ -44,10 +44,6 @@ QPushButton {
     color: #fff;
 }
 
-#extremebutton {
-    background-color: #9A3E3E;
-}
-
 #button:hover {
     background-color: #e6e6e6;
 }

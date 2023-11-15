@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt
-from constants import *
+from config import *
+import pycountry
 import random
 
 class WordluxeGame(QMainWindow):
@@ -16,24 +17,19 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
         self.showFullScreen()
-        self.setup_ui()
+        self.setup_pages()
 
         with open(STYLE_FILE_PATH, 'r') as f:
             self.stylesheet = f.read()
 
         QApplication.instance().setStyleSheet(self.stylesheet)
 
-    def setup_ui(self):
-        self.setup_main_menu_page()
-        self.setup_second_page()
-        self.setup_third_page()
-        self.setup_game_page()
+    def setup_pages(self):
+        for page in SETUP_PAGES:
+            getattr(self, page)()
 
     def setup_main_menu_page(self):
-        main_menu_frame = QFrame(self.stacked_widget)
-        main_menu_frame.setGeometry(0, 0, self.width(), self.height())
-        main_menu_frame.setObjectName("mmframe")
-
+        main_menu_frame = self.create_frame("mmframe")
         main_layout = QVBoxLayout(main_menu_frame)
         main_layout.setAlignment(Qt.AlignCenter)
 
@@ -42,18 +38,12 @@ class WordluxeGame(QMainWindow):
 
         main_buttons_layout = QHBoxLayout()
 
-        play_button = QPushButton("Play", main_menu_frame, objectName="button")
-        play_button.setFixedWidth(BUTTON_FIXED_WIDTH)
-        play_button.clicked.connect(self.play_button_pressed)
-        play_button.setCursor(Qt.PointingHandCursor)
+        play_button = self.create_button("Play", main_menu_frame, self.play_button_pressed)
         main_buttons_layout.addWidget(play_button)
 
         main_buttons_layout.addSpacing(MAIN_BUTTONS_SPACING)
         
-        quit_button = QPushButton("Quit", main_menu_frame, objectName="quitButton")
-        quit_button.setFixedWidth(BUTTON_FIXED_WIDTH)
-        quit_button.clicked.connect(self.quit_button_pressed)
-        quit_button.setCursor(Qt.PointingHandCursor)
+        quit_button = self.create_button("Quit", main_menu_frame, self.quit_button_pressed, "quitButton")
         main_buttons_layout.addWidget(quit_button)
 
         main_buttons_layout.setAlignment(Qt.AlignCenter)
@@ -71,44 +61,28 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.addWidget(main_menu_frame)
 
     def setup_second_page(self):
-        cat_frame = QFrame(self.stacked_widget)
-        self.stacked_widget.addWidget(cat_frame)
-        cat_frame.setGeometry(0, 0, self.width(), self.height())
-        cat_frame.setObjectName("cframe")
-
-        cat_layout = QVBoxLayout()
-        cat_layout.setAlignment(Qt.AlignCenter)
-
-        cat_text = QLabel("Choose category", cat_frame)
-        cat_text.setObjectName("cat_text")
-        cat_text.setAlignment(Qt.AlignCenter)
-        cat_layout.addWidget(cat_text)
-        cat_layout.addSpacing(CAT_DIF_LAYOUT_SPACING)
-
-        self.create_buttons(cat_layout, CATEGORY_BUTTONS, cat_frame, self.cat_buttons_pressed)
+        self.setup_category_difficulty_page("cframe", "Choose category", CATEGORY_BUTTONS, self.cat_buttons_pressed)
 
     def setup_third_page(self):
-        dif_frame = QFrame(self.stacked_widget)
-        self.stacked_widget.addWidget(dif_frame)
-        dif_frame.setGeometry(0, 0, self.width(), self.height())
-        dif_frame.setObjectName("dframe")
+        self.setup_category_difficulty_page("dframe", "Choose difficulty", DIFFICULTY_BUTTONS, self.dif_buttons_pressed)
 
-        dif_layout = QVBoxLayout()
-        dif_layout.setAlignment(Qt.AlignCenter)
+    def setup_category_difficulty_page(self, frame_name, text, buttons, function):
+        frame = self.create_frame(frame_name)
+        self.stacked_widget.addWidget(frame)
 
-        dif_text = QLabel("Choose difficulty", dif_frame)
-        dif_text.setObjectName("cat_text")
-        dif_text.setAlignment(Qt.AlignCenter)
-        dif_layout.addWidget(dif_text)
-        dif_layout.addSpacing(CAT_DIF_LAYOUT_SPACING)
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
 
-        self.create_buttons(dif_layout, DIFFICULTY_BUTTONS, dif_frame, self.dif_buttons_pressed)
+        label = QLabel(text, frame)
+        label.setObjectName("cat_text")
+        label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(label)
+        layout.addSpacing(CAT_DIF_LAYOUT_SPACING)
+
+        self.create_buttons(layout, buttons, frame, function)
 
     def setup_game_page(self):
-        game_frame = QFrame(self.stacked_widget)
-        self.stacked_widget.addWidget(game_frame)
-        game_frame.setGeometry(0, 0, self.width(), self.height())
-        game_frame.setObjectName("gframe")
+        game_frame = self.create_frame("gframe")
 
         self.board = []
         self.num_guess = 0
@@ -135,10 +109,10 @@ class WordluxeGame(QMainWindow):
         game_layout = QVBoxLayout(game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
         game_layout.addWidget(grid_frame)
+
+        self.stacked_widget.addWidget(game_frame)
         
     def keyPressEvent(self, event):
-        print("Key pressed:", event.key())
-
         key_function_mapping = {
             Qt.Key_Escape: self.close,
             Qt.Key_Return: self.validate,
@@ -171,6 +145,7 @@ class WordluxeGame(QMainWindow):
                 self.do_backspace()
         else:
             self.check_guess()
+            
     def check_guess(self):
         length = len(self.word)
         output = ["-"] * length
@@ -205,15 +180,9 @@ class WordluxeGame(QMainWindow):
 
     def create_buttons(self, layout, buttons, parent, function):
         for button in buttons:
-            button = QPushButton(button, parent)
-            button.setFixedWidth(BUTTON_FIXED_WIDTH)
-            button.setCursor(Qt.PointingHandCursor)
-            button.clicked.connect(lambda _, text=button: function(text))
-
+            button = self.create_button(button, parent, function)
             if button.text() == EXTREME_DIFFICULTY:
                 button.setObjectName("extremeButton")
-            else:
-                button.setObjectName("button")
             layout.addWidget(button)
             layout.addSpacing(BUTTON_SPACING)
 
@@ -222,16 +191,15 @@ class WordluxeGame(QMainWindow):
     def play_button_pressed(self):
         self.stacked_widget.setCurrentIndex(1)
 
-    def cat_buttons_pressed(self, category):
+    def cat_buttons_pressed(self):
         self.stacked_widget.setCurrentIndex(2)
         global CATEGORY
-        CATEGORY = category.text()
-        self.load_word_bank()
+        CATEGORY = self.sender().text()
         
-    def dif_buttons_pressed(self, difficulty):
+    def dif_buttons_pressed(self):
         self.stacked_widget.setCurrentIndex(3)
         global DIFFICULTY
-        DIFFICULTY = difficulty.text()
+        DIFFICULTY = self.sender().text()
         self.load_word_bank()
 
     def load_word_bank(self):
@@ -241,6 +209,19 @@ class WordluxeGame(QMainWindow):
             
     def quit_button_pressed(self):
         self.close()
+
+    def create_frame(self, object_name):
+        frame = QFrame(self.stacked_widget)
+        frame.setGeometry(0, 0, self.width(), self.height())
+        frame.setObjectName(object_name)
+        return frame
+
+    def create_button(self, text, parent, function, object_name="button"):
+        button = QPushButton(text, parent, objectName=object_name)
+        button.setFixedWidth(BUTTON_FIXED_WIDTH)
+        button.clicked.connect(function)
+        button.setCursor(Qt.PointingHandCursor)
+        return button
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
