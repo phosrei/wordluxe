@@ -111,17 +111,18 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.addWidget(game_frame)
         
     def keyPressEvent(self, event):
-        key_function_mapping = {
-            Qt.Key_Escape: self.close,
-            Qt.Key_Return: self.validate,
-            Qt.Key_Backspace: self.do_backspace,
-            Qt.Key_F3: self.show_answer
-        }
+        if self.stacked_widget.currentIndex() == 3:
+            key_function_mapping = {
+                Qt.Key_Escape: self.close,
+                Qt.Key_Return: self.validate,
+                Qt.Key_Backspace: self.do_backspace,
+                Qt.Key_F3: self.show_answer
+            }
 
-        if event.key() in key_function_mapping:
-            key_function_mapping[event.key()]()
-        elif event.text().isalpha():
-            self.add_letter(event.text().upper())
+            if event.key() in key_function_mapping:
+                key_function_mapping[event.key()]()
+            elif event.text().isalpha():
+                self.add_letter(event.text().upper())
             
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
@@ -171,6 +172,7 @@ class WordluxeGame(QMainWindow):
 
         if self.num_guess == 5 or self.word == self.guess:
             self.show_answer()
+            self.stacked_widget.setCurrentIndex(0)
         else:
             self.num_guess += 1
             self.guess = ''
@@ -190,21 +192,18 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.setCurrentIndex(1)
 
     def cat_buttons_pressed(self):
-        global CATEGORY
-        CATEGORY = self.sender().text().lower()
+        self.category = self.sender().text().lower()
         self.setup_third_page()
         self.stacked_widget.setCurrentIndex(2)
         
     def dif_buttons_pressed(self):
-        global DIFFICULTY
-        DIFFICULTY = self.sender().text().lower()
+        self.difficulty = self.sender().text().lower()
         self.load_word_bank()
         self.stacked_widget.setCurrentIndex(3)
 
     def load_word_bank(self):
-        if CATEGORY and DIFFICULTY:
-            self.word = random.choice(list(WORDBANK_CAT[CATEGORY][DIFFICULTY])).upper()
-            self.setup_game_page()
+        self.word = random.choice(list(WORDBANK_CAT[self.category][self.difficulty])).upper()
+        self.setup_game_page()
             
     def quit_button_pressed(self):
         self.close()
