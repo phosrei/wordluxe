@@ -2,9 +2,8 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from config import *
-import pycountry
 import random
 
 class WordluxeGame(QMainWindow):
@@ -128,7 +127,7 @@ class WordluxeGame(QMainWindow):
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
         elif self.stacked_widget.currentIndex() == 3:
             key_function_mapping = {    
-                Qt.Key_Return: self.validate,
+                Qt.Key_Return: self.check_guess,
                 Qt.Key_Backspace: self.do_backspace,
                 Qt.Key_F3: self.show_answer
             }
@@ -178,22 +177,19 @@ class WordluxeGame(QMainWindow):
 
     def show_answer(self):
         QMessageBox.information(self, 'ANSWER',f'The correct answer is: {self.word}')
-
-    def validate(self):
-        guess_lower = self.guess.lower()
-        if guess_lower not in DICTIONARY:
-            for _ in range(len(self.word)):
-                self.do_backspace()
-        else:
-            self.check_guess()
-            
+                        
+    def reset_box_color(self):
+        for i in range(len(self.word)):
+            self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: transparent; font-size: 48px; border: 2px solid grey;}')
+    
     def check_guess(self):
         word_length = len(self.word)
         guess_length = len(self.guess)
         output = ["-"] * word_length
+        guess_lower = self.guess.lower()
         word = self.word
 
-        if guess_length == word_length:
+        if guess_lower in DICTIONARY and guess_length == word_length:
             for i in range(word_length):
                 if self.guess[i] == word[i]:
                     self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px; border: none;}')
@@ -217,9 +213,15 @@ class WordluxeGame(QMainWindow):
                 self.num_guess += 1
                 self.guess = ''            
         else:
-            for _ in range(guess_length):
-                self.do_backspace()
+            for i in range(len(self.word)):
+                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #D03939; font-size: 48px; border: none;}')                
+                QTimer.singleShot(1000, lambda: self.updateStyleSheet())  # 1000 milliseconds = 1 second
 
+    def updateStyleSheet(self, ):
+        for i in range(len(self.word)):
+            self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: transparent; font-size: 48px; border: 2px solid grey;}')
+            self.do_backspace()
+            
     def get_random_word(self):
         if CATEGORY and DIFFICULTY:
             self.word = random.choice(list(WORDLIST_CAT[CATEGORY.lower()][DIFFICULTY.lower()])).upper()

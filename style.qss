@@ -19,7 +19,7 @@ QPushButton {
 }
 
 #extremeButton {
-    background-color: #9A3E3E;
+    background-color: #D03939;
     color: #fff;
 }
 
