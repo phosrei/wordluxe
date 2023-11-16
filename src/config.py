@@ -1,12 +1,12 @@
 from nltk.corpus import words
-from wordbank import categories
+from wordlist import categories
 
 DICTIONARY = set(words.words())
 CATEGORY = None
 DIFFICULTY = None
 
-# Wordbank categories
-WORDBANK_CAT = {
+# Wordlist categories
+WORDLIST_CAT = {
     "general": categories["general"],
     "countries": categories["countries"],
     "animals": categories["animals"],
@@ -17,10 +17,10 @@ WORDBANK_CAT = {
 }
 
 # Grid and tiles
-GRID_ROWS = 6
 GAP_SIZE = 10
+GRID_ROWS = 6
 GRID_COLUMNS = 5
-GRID_FRAME_WIDTH = 600
+GRID_FRAME_WIDTH = 500
 GRID_FRAME_HEIGHT = 700
 BOX_WIDTH = 80
 BOX_HEIGHT = 80
@@ -37,7 +37,7 @@ MAIN_BUTTONS_SPACING = 30
 
 # Layout spacing
 MAIN_LAYOUT_SPACING = 60
-TEXT_SPACING = 30
+CAT_DIF_LAYOUT_SPACING = 30
 
 # File paths
 GAME_ICON_PATH = "assets/game_icon.ico"

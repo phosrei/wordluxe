@@ -73,7 +73,7 @@ class WordluxeGame(QMainWindow):
         label.setObjectName("cat_text")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
-        layout.addSpacing(TEXT_SPACING)
+        layout.addSpacing(CAT_DIF_LAYOUT_SPACING)
 
         self.create_buttons(layout, buttons, frame, function)
 
@@ -90,7 +90,7 @@ class WordluxeGame(QMainWindow):
         grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
         grid_frame_height = GRID_ROWS * (BOX_HEIGHT + GAP_SIZE)
         grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
-        
+
         for i in range(GRID_ROWS):
             row_labels = []
             for j in range(len(self.word)):
@@ -125,7 +125,7 @@ class WordluxeGame(QMainWindow):
                 self.add_letter(event.text().upper())
             
     def add_letter(self, key):
-        if len(self.guess) < len(self.word):
+        if len(self.guess) < 5:
             self.board[self.num_guess][len(self.guess)].setText(key)
             self.guess += key
 
@@ -135,7 +135,7 @@ class WordluxeGame(QMainWindow):
             self.board[self.num_guess][len(self.guess)].setText(' ')
 
     def show_answer(self):
-        QMessageBox.information(self, 'Answer', self.word)
+        QMessageBox.information(self, 'ANSWER',f'The correct answer is: {self.word}')
 
     def validate(self):
         guess_lower = self.guess.lower()
@@ -155,9 +155,6 @@ class WordluxeGame(QMainWindow):
                 self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
                 output[i] = self.guess[i]
                 word = word.replace(self.guess[i], "-", 1)
-            else:
-                for _ in range(length):
-                    self.do_backspace()
 
         for i in range(length):
             if self.guess[i] in word and output[i] == "-":
@@ -172,7 +169,6 @@ class WordluxeGame(QMainWindow):
 
         if self.num_guess == 5 or self.word == self.guess:
             self.show_answer()
-            self.stacked_widget.setCurrentIndex(0)
         else:
             self.num_guess += 1
             self.guess = ''
@@ -192,18 +188,21 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.setCurrentIndex(1)
 
     def cat_buttons_pressed(self):
-        self.category = self.sender().text().lower()
+        global CATEGORY
+        CATEGORY = self.sender().text()
         self.setup_third_page()
         self.stacked_widget.setCurrentIndex(2)
         
     def dif_buttons_pressed(self):
-        self.difficulty = self.sender().text().lower()
+        global DIFFICULTY
+        DIFFICULTY = self.sender().text()
         self.load_word_bank()
         self.stacked_widget.setCurrentIndex(3)
 
     def load_word_bank(self):
-        self.word = random.choice(list(WORDBANK_CAT[self.category][self.difficulty])).upper()
-        self.setup_game_page()
+        if CATEGORY and DIFFICULTY:
+            self.word = random.choice(list(WORDLIST_CAT[CATEGORY.lower()][DIFFICULTY.lower()])).upper()
+            self.setup_game_page()
             
     def quit_button_pressed(self):
         self.close()
