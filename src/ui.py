@@ -20,9 +20,7 @@ class WordluxeGame(QMainWindow):
         self.setup_main_menu_page()
 
         with open(STYLE_FILE_PATH, 'r') as f:
-            self.stylesheet = f.read()
-
-        QApplication.instance().setStyleSheet(self.stylesheet)
+            QApplication.instance().setStyleSheet(f.read())
 
     def setup_main_menu_page(self):
         main_menu_frame = self.create_frame("mmframe")
@@ -111,9 +109,10 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.addWidget(game_frame)
         
     def keyPressEvent(self, event):
-        if self.stacked_widget.currentIndex() == 3:
-            key_function_mapping = {
-                Qt.Key_Escape: self.close,
+        if event.key() == Qt.Key_Escape:
+            self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
+        elif self.stacked_widget.currentIndex() == 3:
+            key_function_mapping = {    
                 Qt.Key_Return: self.validate,
                 Qt.Key_Backspace: self.do_backspace,
                 Qt.Key_F3: self.show_answer
@@ -189,22 +188,25 @@ class WordluxeGame(QMainWindow):
         parent.setLayout(layout)
 
     def play_button_pressed(self):
-        self.setup_second_page()
+        if self.stacked_widget.count() < 2:
+            self.setup_second_page()
         self.stacked_widget.setCurrentIndex(1)
 
     def cat_buttons_pressed(self):
         global CATEGORY
         CATEGORY = self.sender().text()
-        self.setup_third_page()
+        if self.stacked_widget.count() < 3:
+            self.setup_third_page()
         self.stacked_widget.setCurrentIndex(2)
-        
+            
     def dif_buttons_pressed(self):
         global DIFFICULTY
         DIFFICULTY = self.sender().text()
-        self.load_word_bank()
+        if self.stacked_widget.count() < 4:
+            self.get_random_word()
         self.stacked_widget.setCurrentIndex(3)
 
-    def load_word_bank(self):
+    def get_random_word(self):
         if CATEGORY and DIFFICULTY:
             self.word = random.choice(list(WORDLIST_CAT[CATEGORY.lower()][DIFFICULTY.lower()])).upper()
             self.setup_game_page()

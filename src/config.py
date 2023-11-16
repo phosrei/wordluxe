@@ -46,4 +46,3 @@ STYLE_FILE_PATH = 'style.qss'
 
 # Others
 EXTREME_DIFFICULTY = "Extreme"
-SETUP_PAGES = ["setup_main_menu_page", "setup_second_page", "setup_third_page", "setup_game_page"]
