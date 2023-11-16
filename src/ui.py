@@ -154,19 +154,19 @@ class WordluxeGame(QMainWindow):
         if guess_length == word_length:
             for i in range(word_length):
                 if self.guess[i] == word[i]:
-                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
+                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px; border: none;}')
                     output[i] = self.guess[i]
                     word = word.replace(self.guess[i], "-", 1)
 
             for i in range(word_length):
                 if self.guess[i] in word and output[i] == "-":
-                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px}')
+                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px; border: none;}')
                     output[i] = self.guess[i]
                     word = word.replace(self.guess[i], "-", 1)
                 elif self.guess[i] in output[i]:
                     continue
                 else:
-                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px}')
+                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px; border: none;}')
                     output[i] = (self.guess[i])
         
             if self.num_guess == 5 or self.word == self.guess:
