@@ -125,7 +125,7 @@ class WordluxeGame(QMainWindow):
                 self.add_letter(event.text().upper())
             
     def add_letter(self, key):
-        if len(self.guess) < 5:
+        if len(self.guess) < len(self.word):
             self.board[self.num_guess][len(self.guess)].setText(key)
             self.guess += key
 
@@ -140,38 +140,43 @@ class WordluxeGame(QMainWindow):
     def validate(self):
         guess_lower = self.guess.lower()
         if guess_lower not in DICTIONARY:
-            for _ in range(5):
+            for _ in range(len(self.word)):
                 self.do_backspace()
         else:
             self.check_guess()
             
     def check_guess(self):
-        length = len(self.word)
-        output = ["-"] * length
+        word_length = len(self.word)
+        guess_length = len(self.guess)
+        output = ["-"] * word_length
         word = self.word
 
-        for i in range(length):
-            if self.guess[i] == word[i]:
-                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
-                output[i] = self.guess[i]
-                word = word.replace(self.guess[i], "-", 1)
+        if guess_length == word_length:
+            for i in range(word_length):
+                if self.guess[i] == word[i]:
+                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px}')
+                    output[i] = self.guess[i]
+                    word = word.replace(self.guess[i], "-", 1)
 
-        for i in range(length):
-            if self.guess[i] in word and output[i] == "-":
-                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px}')
-                output[i] = self.guess[i]
-                word = word.replace(self.guess[i], "-", 1)
-            elif self.guess[i] in output[i]:
-                continue
+            for i in range(word_length):
+                if self.guess[i] in word and output[i] == "-":
+                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px}')
+                    output[i] = self.guess[i]
+                    word = word.replace(self.guess[i], "-", 1)
+                elif self.guess[i] in output[i]:
+                    continue
+                else:
+                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px}')
+                    output[i] = (self.guess[i])
+        
+            if self.num_guess == 5 or self.word == self.guess:
+                self.show_answer()
             else:
-                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px}')
-                output[i] = (self.guess[i])
-
-        if self.num_guess == 5 or self.word == self.guess:
-            self.show_answer()
+                self.num_guess += 1
+                self.guess = ''            
         else:
-            self.num_guess += 1
-            self.guess = ''
+            for _ in range(guess_length):
+                self.do_backspace()
 
     def create_buttons(self, layout, buttons, parent, function):
         for button in buttons:
