@@ -4,8 +4,18 @@ import cairosvg
 import random
 from nltk.corpus import words
 from tkinter import messagebox
-from wordluxe import wordbank_cat
 from PIL import ImageTk, Image
+from wordbank import categories
+
+wordbank_cat = {
+    "general": categories.get("general"),
+    "countries": categories.get("countries"),
+    "animals": categories.get("animals"),
+    "fruits": categories.get("fruits"),
+    "sports": categories.get("sports"),
+    "artists": categories.get("artists"),
+    "songs": categories.get("songs")
+}
 
 game = tk.Tk()
 game.attributes("-fullscreen", True)
