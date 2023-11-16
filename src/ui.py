@@ -145,9 +145,7 @@ bg_label = tk.Label(master = main_menu,
 bg_label.place(x=-400, y=-2)
 
 # Wordluxe Game Logo
-svg_data = open("assets/game_logo.svg", "rb").read()
-png_data = cairosvg.svg2png(bytestring = svg_data)
-photo_image = tk.PhotoImage(data = png_data)
+photo_image = tk.PhotoImage(file="assets/game_logo.png")
 
 wl_label = tk.Label(master = main_menu,  
                     image = photo_image,
