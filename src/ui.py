@@ -215,8 +215,7 @@ class WordluxeGame(QMainWindow):
         else:
             for i in range(len(self.word)):
                 self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #D03939; font-size: 48px; border: none;}')                
-                QTimer.singleShot(1000, lambda: self.updateStyleSheet())  # 1000 milliseconds = 1 second
-
+                QTimer.singleShot(700, lambda: self.updateStyleSheet())
     def updateStyleSheet(self, ):
         for i in range(len(self.word)):
             self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: transparent; font-size: 48px; border: 2px solid grey;}')
