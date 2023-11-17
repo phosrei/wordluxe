@@ -57,7 +57,6 @@ class WordluxeGame(QMainWindow):
 
     def setup_game_page(self):
         game_frame = self.create_frame("gframe")
-        game_frame.setFixedSize(self.width(), self.height())
 
         self.board = []
         self.num_guess = 0
