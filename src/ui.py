@@ -18,7 +18,7 @@ class WordluxeGame(QMainWindow):
         self.showFullScreen()
         self.setup_main_menu_page()
 
-        with open(STYLE_FILE_PATH, 'r') as f:
+        with open(STYLE_FILE_PATH, "r") as f:
             QApplication.instance().setStyleSheet(f.read())
 
     def setup_main_menu_page(self):
@@ -61,7 +61,7 @@ class WordluxeGame(QMainWindow):
 
         self.board = []
         self.num_guess = 0
-        self.guess = ''
+        self.guess = ""
 
         grid_layout = QGridLayout()
         powerups_layout = QVBoxLayout()
@@ -79,13 +79,13 @@ class WordluxeGame(QMainWindow):
 
         grid_frame = QFrame(game_frame)
         grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
-        grid_frame_height = GRID_ROWS * (BOX_HEIGHT + GAP_SIZE)
+        grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
         grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
 
-        for i in range(GRID_ROWS):
+        for i in range(self.max_guesses):
             row_labels = []
             for j in range(len(self.word)):
-                grid_label = QLabel(' ')
+                grid_label = QLabel(" ")
                 grid_label.setAlignment(Qt.AlignCenter)
                 grid_label.setObjectName("grid")
                 grid_label.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
@@ -146,24 +146,30 @@ class WordluxeGame(QMainWindow):
         self.close()
 
     def cat_buttons_pressed(self):
-        global CATEGORY
-        CATEGORY = self.sender().text()
+        self.category = self.sender().text()
         if self.stacked_widget.count() < 3:
             self.setup_third_page()
         self.stacked_widget.setCurrentIndex(2)
             
     def dif_buttons_pressed(self):
-        global DIFFICULTY
-        DIFFICULTY = self.sender().text()
+        self.difficulty = self.sender().text()
+        self.get_grid_row()
         if self.stacked_widget.count() > 3:
             self.stacked_widget.removeWidget(self.stacked_widget.widget(3))
         self.get_random_word()
         self.stacked_widget.setCurrentIndex(3)
-        
+
+    def get_grid_row(self):
+        difficulty_levels = {
+            "Hard": 5,
+            "Extreme": 4
+        }
+        self.max_guesses = difficulty_levels.get(self.difficulty, 6)
+       
     def reset_game_state(self):
         self.board = []
         self.num_guess = 0
-        self.guess = ''
+        self.guess = ""
             
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
@@ -173,58 +179,56 @@ class WordluxeGame(QMainWindow):
     def do_backspace(self):
         if len(self.guess) > 0:
             self.guess = self.guess[0:-1]
-            self.board[self.num_guess][len(self.guess)].setText(' ')
+            self.board[self.num_guess][len(self.guess)].setText(" ")
 
     def show_answer(self):
-        QMessageBox.information(self, 'ANSWER',f'The correct answer is: {self.word}')
-                        
-    def reset_box_color(self):
-        for i in range(len(self.word)):
-            self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: transparent; font-size: 48px; border: 2px solid grey;}')
+        QMessageBox.information(self, "ANSWER",f"The correct answer is: {self.word}")
     
     def check_guess(self):
-        word_length = len(self.word)
-        guess_length = len(self.guess)
-        output = ["-"] * word_length
-        guess_lower = self.guess.lower()
-        word = self.word
+        guess = self.guess.lower()
+        word = self.word.lower()
 
-        if guess_lower in DICTIONARY and guess_length == word_length:
-            for i in range(word_length):
-                if self.guess[i] == word[i]:
-                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #6aaa64; font-size: 48px; border: none;}')
-                    output[i] = self.guess[i]
-                    word = word.replace(self.guess[i], "-", 1)
+        if guess not in DICTIONARY or len(guess) != len(word):
+            self.highlight_incorrect_guess()
+            return
 
-            for i in range(word_length):
-                if self.guess[i] in word and output[i] == "-":
-                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #c9b458; font-size: 48px; border: none;}')
-                    output[i] = self.guess[i]
-                    word = word.replace(self.guess[i], "-", 1)
-                elif self.guess[i] in output[i]:
-                    continue
-                else:
-                    self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: grey; font-size: 48px; border: none;}')
-                    output[i] = (self.guess[i])
-        
-            if self.num_guess == 5 or self.word == self.guess:
-                self.show_answer()
+        for i in range(len(word)):
+            if guess[i] == word[i]:
+                self.highlight_letter(i, "correct")
+                word = word.replace(guess[i], "-", 1)
+                guess = guess.replace(guess[i], "-", 1)
+            elif guess[i] in word:
+                self.highlight_letter(i, "present")
+                word = word.replace(guess[i], "-", 1)
+                guess = guess.replace(guess[i], "-", 1)
             else:
-                self.num_guess += 1
-                self.guess = ''            
+                self.highlight_letter(i, "absent")
+
+        if self.num_guess == (self.max_guesses - 1) or word == guess:
+            self.show_answer()
         else:
-            for i in range(len(self.word)):
-                self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: #D03939; font-size: 48px; border: none;}')                
-                QTimer.singleShot(700, lambda: self.updateStyleSheet())
-    def updateStyleSheet(self, ):
+            self.num_guess += 1
+            self.guess = ""
+
+    def highlight_letter(self, i, type):
+        self.board[self.num_guess][i].setStyleSheet(self.set_label_color(LETTER_COLORS[type], "none"))
+
+    def highlight_incorrect_guess(self):
         for i in range(len(self.word)):
-            self.board[self.num_guess][i].setStyleSheet('QLabel {font-family: Inter; font-weight: bold; color: black; background-color: transparent; font-size: 48px; border: 2px solid grey;}')
+            self.board[self.num_guess][i].setStyleSheet(self.set_label_color("#d03939", "none"))
+        QTimer.singleShot(700, self.reset_grid)
+
+    def reset_grid(self):
+        for i in range(len(self.word)):
+            self.board[self.num_guess][i].setStyleSheet(self.set_label_color("transparent", "2px solid grey"))
             self.do_backspace()
             
+    def set_label_color(self, color, border):
+        return f"QLabel {{font-family: Inter; font-weight: bold; color: black; background-color: {color}; font-size: 48px; border: {border};}}"
+
     def get_random_word(self):
-        if CATEGORY and DIFFICULTY:
-            self.word = random.choice(list(WORDLIST_CAT[CATEGORY.lower()][DIFFICULTY.lower()])).upper()
-            self.setup_game_page()
+        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
+        self.setup_game_page()
 
     def create_frame(self, object_name):
         frame = QFrame(self.stacked_widget)
@@ -240,12 +244,13 @@ class WordluxeGame(QMainWindow):
         return button
 
     def create_buttons(self, layout, buttons, parent, function):
-        for button in buttons:
-            button = self.create_button(button, parent, function)
-            if button.text() == EXTREME_DIFFICULTY:
+        for button_text in buttons:
+            button = self.create_button(button_text, parent, function)
+            if button_text == EXTREME_DIFFICULTY:
                 button.setObjectName("extremeButton")
             layout.addWidget(button)
             layout.addSpacing(BUTTON_SPACING)
+        parent.setLayout(layout)
 
         parent.setLayout(layout)
 

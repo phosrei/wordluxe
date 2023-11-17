@@ -2,8 +2,6 @@ from nltk.corpus import words
 from wordlist import categories
 
 DICTIONARY = set(words.words())
-CATEGORY = None
-DIFFICULTY = None
 
 # Dictionary mapping
 WORDLIST_CAT = {
@@ -16,10 +14,14 @@ WORDLIST_CAT = {
     "songs": categories["songs"]
 }
 
+LETTER_COLORS = {
+    "correct": "#6aaa64",
+    "present": "#c9b458",
+    "absent": "grey",
+}
+
 # Grid and tiles
 GAP_SIZE = 10
-GRID_ROWS = 6
-GRID_COLUMNS = 5
 GRID_FRAME_WIDTH = 500
 GRID_FRAME_HEIGHT = 700
 BOX_WIDTH = 80
