@@ -92,6 +92,7 @@ class WordluxeGame(QMainWindow):
                 grid_layout.addWidget(grid_label, i, j)
             self.board.append(row_labels)
 
+        grid_frame.adjustSize()
         game_layout.addWidget(grid_frame)
 
         x = game_frame.width() // 2 + grid_frame.width() // 2
