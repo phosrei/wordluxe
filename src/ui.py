@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QSize
 from config import *
 import random
 
@@ -10,16 +10,17 @@ class WordluxeGame(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowIcon(QIcon(GAME_ICON_PATH))
         self.setWindowTitle("Wordluxe")
+        self.setWindowIcon(QIcon(GAME_ICON_PATH))
 
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
         self.showFullScreen()
-        self.setup_main_menu_page()
 
         with open(STYLE_FILE_PATH, "r") as f:
             QApplication.instance().setStyleSheet(f.read())
+
+        self.setup_main_menu_page()
 
     def setup_main_menu_page(self):
         main_menu_frame = self.create_frame("mmframe")
@@ -29,13 +30,13 @@ class WordluxeGame(QMainWindow):
         game_logo = QSvgWidget(GAME_LOGO_PATH, main_menu_frame)
         game_logo.setFixedSize(game_logo.sizeHint())
         main_layout.addWidget(game_logo)
-        main_layout.addSpacing(MAIN_LAYOUT_SPACING)
+        main_layout.addSpacing(HEADING_SPACING)
 
         heading = QLabel("The new, and \nimproved wordle!", main_menu_frame)
         heading.setObjectName("heading")
         heading.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(heading)
-        main_layout.addSpacing(MAIN_LAYOUT_SPACING)
+        main_layout.addSpacing(HEADING_SPACING)
 
         main_buttons_layout = QHBoxLayout()
         main_buttons_layout.setAlignment(Qt.AlignCenter)
@@ -64,15 +65,14 @@ class WordluxeGame(QMainWindow):
 
         grid_layout = QGridLayout()
         powerups_layout = QVBoxLayout()
-        powerups_layout.setAlignment(Qt.AlignTop)
 
         powerups_frame = QFrame(game_frame)
 
         for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
             powerup = QSvgWidget(powerups, powerups_frame)
-            powerup.setFixedSize(powerup.sizeHint())
+            powerup.setFixedSize(POWERUP_WIDTH, POWERUP_WIDTH)
             powerups_layout.addWidget(powerup)
-            powerups_layout.addSpacing(10)
+            powerups_layout.addSpacing(ICON_SPACING)
 
         powerups_frame.setLayout(powerups_layout)
 
@@ -114,10 +114,10 @@ class WordluxeGame(QMainWindow):
         layout.setAlignment(Qt.AlignCenter)
 
         label = QLabel(text, frame)
-        label.setObjectName("cat_text")
+        label.setObjectName("templateText")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
-        layout.addSpacing(CAT_DIF_LAYOUT_SPACING)
+        layout.addSpacing(HEADING_SPACING)
 
         self.create_buttons(layout, buttons, frame, function)
     
@@ -215,7 +215,7 @@ class WordluxeGame(QMainWindow):
     def highlight_incorrect_guess(self):
         for i in range(len(self.word)):
             self.board[self.num_guess][i].setStyleSheet(self.set_label_color("#d03939", "none"))
-        QTimer.singleShot(700, self.reset_grid)
+        QTimer.singleShot(DELAY, self.reset_grid)
 
     def reset_grid(self):
         for i in range(len(self.word)):
@@ -249,8 +249,6 @@ class WordluxeGame(QMainWindow):
                 button.setObjectName("extremeButton")
             layout.addWidget(button)
             layout.addSpacing(BUTTON_SPACING)
-        parent.setLayout(layout)
-
         parent.setLayout(layout)
 
 if __name__ == "__main__":

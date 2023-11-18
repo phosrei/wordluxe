@@ -12,7 +12,7 @@ QPushButton {
     color: white;
 }
 
-#cat_text {
+#templateText {
     font-size: 32px;
     font-family: Georgia;
     color: white;

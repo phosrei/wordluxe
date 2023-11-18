@@ -1,6 +1,7 @@
 from nltk.corpus import words
 from wordlist import categories
 
+# Dictionary
 DICTIONARY = set(words.words())
 
 # Dictionary mapping
@@ -14,6 +15,14 @@ WORDLIST_CAT = {
     "songs": categories["songs"]
 }
 
+# Keyboard
+KEYBOARD = [
+    ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+    ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+    ["Z", "X", "C", "V", "B", "N", "M"]
+]
+
+# Colors
 LETTER_COLORS = {
     "correct": "#6aaa64",
     "present": "#c9b458",
@@ -33,13 +42,11 @@ DIFFICULTY_BUTTONS = ["Easy", "Normal", "Hard", "Extreme"]
 
 # Button dimensions
 BUTTON_FIXED_WIDTH = 260
-WIDTH = 240
 MAIN_BUTTONS_SPACING = 30
 
 # Spacing
 BUTTON_SPACING = 15
-MAIN_LAYOUT_SPACING = 60
-CAT_DIF_LAYOUT_SPACING = 30
+HEADING_SPACING = 60
 ICON_SPACING = 10
 
 # File paths
@@ -52,4 +59,8 @@ STYLE_FILE_PATH = 'style.qss'
 
 # Others
 EXTREME_DIFFICULTY = "Extreme"
-INDEX_THREE = 3
+DELAY = 700
+
+# Powerup dimensions
+POWERUP_WIDTH = 70
+POWERUP_HEIGHT = 70
