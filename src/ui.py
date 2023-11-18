@@ -9,6 +9,7 @@ import random
 class WordluxeGame(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.keyboard_buttons = {}
 
         self.setWindowTitle("Wordluxe")
         self.setWindowIcon(QIcon(GAME_ICON_PATH))
@@ -58,28 +59,35 @@ class WordluxeGame(QMainWindow):
 
     def setup_game_page(self):
         game_frame = self.create_frame("gframe")
-        game_layout = QHBoxLayout(game_frame)
-        game_layout.setAlignment(Qt.AlignCenter)
+        game_layout = QVBoxLayout(game_frame)
         game_frame.setLayout(game_layout)
 
-        grid_frame = QFrame(game_frame)
+        grid_frame = self.create_grid_frame(game_frame)
+        powerups_frame = self.create_powerups_frame(game_frame)
+
+        game_layout.addSpacing(TOP_SPACING)
+        game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
+
+        keyboard_frame = QFrame()
+        keyboard_layout = self.create_keyboard_layout()
+        keyboard_frame.setLayout(keyboard_layout)
+        game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter | Qt.AlignBottom)
+        game_layout.addSpacing(BOTTOM_SPACING)
+
+        powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
+        powerup_y = (game_frame.height() - powerups_frame.height()) // 4
+        powerups_frame.move(powerup_x, powerup_y)
+
+        self.stacked_widget.addWidget(game_frame)
+
+    def create_grid_frame(self, parent):
+        grid_frame = QFrame(parent)
         grid_layout = QGridLayout()
         grid_frame.setLayout(grid_layout)
-
-        powerups_frame = QFrame(game_frame)
-        powerups_layout = QVBoxLayout()
-        powerups_frame.setLayout(powerups_layout)
 
         self.board = []
         self.num_guess = 0
         self.guess = ""
-
-        for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
-            powerup = QSvgWidget(powerups, powerups_frame)
-            powerup.setFixedSize(POWERUP_WIDTH, POWERUP_WIDTH)
-            powerups_layout.addWidget(powerup)
-            powerups_layout.addSpacing(ICON_SPACING)
-        powerups_frame.adjustSize()
 
         for i in range(self.max_guesses):
             row_labels = []
@@ -92,15 +100,25 @@ class WordluxeGame(QMainWindow):
                 grid_layout.addWidget(grid_label, i, j)
             self.board.append(row_labels)
 
-        grid_frame.adjustSize()
-        game_layout.addWidget(grid_frame)
+        grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
+        grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
+        grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
 
-        x = game_frame.width() // 2 + grid_frame.width() // 2
-        y = (game_frame.height() - powerups_frame.height()) // 2
+        return grid_frame
 
-        powerups_frame.move(x, y)
+    def create_powerups_frame(self, parent):
+        powerups_frame = QFrame(parent)
+        powerups_layout = QVBoxLayout()
+        powerups_frame.setLayout(powerups_layout)
 
-        self.stacked_widget.addWidget(game_frame)
+        for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
+            powerup = QSvgWidget(powerups, powerups_frame)
+            powerup.setFixedSize(POWERUP_WIDTH, POWERUP_WIDTH)
+            powerups_layout.addWidget(powerup)
+            powerups_layout.addSpacing(ICON_SPACING)
+        powerups_frame.adjustSize()
+
+        return powerups_frame
 
     def page_template(self, frame_name, text, buttons, function):
         frame = self.create_frame(frame_name)
@@ -110,27 +128,67 @@ class WordluxeGame(QMainWindow):
         layout.setAlignment(Qt.AlignCenter)
 
         label = QLabel(text, frame)
-        label.setObjectName("templateText")
+        label.setObjectName("heading")
         label.setAlignment(Qt.AlignCenter)
         layout.addWidget(label)
         layout.addSpacing(HEADING_SPACING)
 
         self.create_buttons(layout, buttons, frame, function)
     
+    def create_keyboard_layout(self):
+        keyboard_layout = QVBoxLayout()
+
+        for row in KEYBOARD:
+            row_layout = QHBoxLayout()
+            row_layout.setAlignment(Qt.AlignCenter)
+
+            for key in row:
+                button = self.create_key(key)
+                row_layout.addWidget(button)
+                self.keyboard_buttons[key] = button
+
+            keyboard_layout.addLayout(row_layout)
+
+        return keyboard_layout
+
+    def create_key(self, key):
+        button = QPushButton(key)
+        button.setObjectName("key")
+        button.setFixedHeight(KEY_HEIGHT)
+
+        if key == "⌫":
+            button.clicked.connect(self.do_backspace)
+            button.setFixedWidth(ENTER_WIDTH)
+        elif key == "ENTER":
+            button.clicked.connect(self.check_guess)
+            button.setObjectName("enterButton")
+            button.setFixedWidth(BKSP_WIDTH)
+        else:
+            button.clicked.connect(lambda checked, key=key: self.add_letter(key))
+
+        return button
+
+    def set_key_color(self, i, color):
+        self.keyboard_buttons[self.guess[i]].setStyleSheet(f"background-color: {color};")
+        
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Escape:
+        key = event.key()
+        if key == Qt.Key_Escape:
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
-        elif self.stacked_widget.currentIndex() == 3:
-            key_function_mapping = {    
+        elif key in self.key_function_mapping():
+            self.key_function_mapping()[key]()
+        elif event.text().isalpha():
+            self.add_letter(event.text().upper())
+        else:
+            super().keyPressEvent(event)
+
+    def key_function_mapping(self):
+        if self.stacked_widget.currentIndex() == 3:
+            return {
                 Qt.Key_Return: self.check_guess,
                 Qt.Key_Backspace: self.do_backspace,
                 Qt.Key_F3: self.show_answer
             }
-
-            if event.key() in key_function_mapping:
-                key_function_mapping[event.key()]()
-            elif event.text().isalpha():
-                self.add_letter(event.text().upper())
 
     def play_button_pressed(self):
         if self.stacked_widget.count() < 2:
@@ -164,8 +222,7 @@ class WordluxeGame(QMainWindow):
     def reset_game_state(self):
         self.board = []
         self.num_guess = 0
-        self.guess = ""
-            
+        self.guess = ""        
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
             self.board[self.num_guess][len(self.guess)].setText(key)
@@ -192,12 +249,15 @@ class WordluxeGame(QMainWindow):
                 self.highlight_letter(i, "correct")
                 word = word.replace(guess[i], "-", 1)
                 guess = guess.replace(guess[i], "-", 1)
+                self.set_key_color(i, "#6aaa64")
             elif guess[i] in word:
                 self.highlight_letter(i, "present")
                 word = word.replace(guess[i], "-", 1)
                 guess = guess.replace(guess[i], "-", 1)
+                self.set_key_color(i, "#c9b458")
             else:
                 self.highlight_letter(i, "absent")
+                self.set_key_color(i, "grey")
 
         if self.num_guess == (self.max_guesses - 1) or word == guess:
             self.show_answer()

@@ -12,10 +12,21 @@ QPushButton {
     color: white;
 }
 
-#templateText {
-    font-size: 32px;
-    font-family: Georgia;
+#key, #enterButton {
+    background-color: #B8BEC1;
+    padding: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: Inter;
     color: white;
+}
+
+#key {
+    font-size: 20px;
+}
+
+#enterButton {
+    font-size: 15px;
 }
 
 #extremeButton {

@@ -16,10 +16,13 @@ WORDLIST_CAT = {
 }
 
 # Keyboard
+KEY_HEIGHT = 80
+ENTER_WIDTH = 90
+BKSP_WIDTH = 90
 KEYBOARD = [
     ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
     ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-    ["Z", "X", "C", "V", "B", "N", "M"]
+    ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "⌫"]
 ]
 
 # Colors
@@ -57,10 +60,13 @@ INVINCIBLE_PATH = "assets/invincible.svg"
 VOWEL_PATH = "assets/vowel.svg"
 STYLE_FILE_PATH = 'style.qss'
 
-# Others
-EXTREME_DIFFICULTY = "Extreme"
-DELAY = 700
 
 # Powerup dimensions
 POWERUP_WIDTH = 60
-POWERUP_HEIGHT = 660
+POWERUP_HEIGHT = 60
+
+# Others
+EXTREME_DIFFICULTY = "Extreme"
+TOP_SPACING = 140
+BOTTOM_SPACING = 40
+DELAY = 700
