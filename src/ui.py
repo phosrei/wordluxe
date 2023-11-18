@@ -58,28 +58,28 @@ class WordluxeGame(QMainWindow):
 
     def setup_game_page(self):
         game_frame = self.create_frame("gframe")
+        game_layout = QHBoxLayout(game_frame)
+        game_layout.setAlignment(Qt.AlignCenter)
+        game_frame.setLayout(game_layout)
+
+        grid_frame = QFrame(game_frame)
+        grid_layout = QGridLayout()
+        grid_frame.setLayout(grid_layout)
+
+        powerups_frame = QFrame(game_frame)
+        powerups_layout = QVBoxLayout()
+        powerups_frame.setLayout(powerups_layout)
 
         self.board = []
         self.num_guess = 0
         self.guess = ""
-
-        grid_layout = QGridLayout()
-        powerups_layout = QVBoxLayout()
-
-        powerups_frame = QFrame(game_frame)
 
         for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
             powerup = QSvgWidget(powerups, powerups_frame)
             powerup.setFixedSize(POWERUP_WIDTH, POWERUP_WIDTH)
             powerups_layout.addWidget(powerup)
             powerups_layout.addSpacing(ICON_SPACING)
-
-        powerups_frame.setLayout(powerups_layout)
-
-        grid_frame = QFrame(game_frame)
-        grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
-        grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
-        grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
+        powerups_frame.adjustSize()
 
         for i in range(self.max_guesses):
             row_labels = []
@@ -90,19 +90,14 @@ class WordluxeGame(QMainWindow):
                 grid_label.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
                 row_labels.append(grid_label)
                 grid_layout.addWidget(grid_label, i, j)
-
             self.board.append(row_labels)
 
-        grid_frame.setLayout(grid_layout)
-
-        game_layout = QHBoxLayout(game_frame)
-        game_layout.setAlignment(Qt.AlignCenter)
         game_layout.addWidget(grid_frame)
-        game_layout.addWidget(powerups_frame)
 
-        game_layout.setAlignment(powerups_frame, Qt.AlignTop)
+        x = game_frame.width() // 2 + grid_frame.width() // 2
+        y = (game_frame.height() - powerups_frame.height()) // 2
 
-        game_frame.setLayout(game_layout)
+        powerups_frame.move(x, y)
 
         self.stacked_widget.addWidget(game_frame)
 
