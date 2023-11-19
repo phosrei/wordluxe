@@ -6,6 +6,11 @@ QPushButton {
     font-family: Inter;
 }
 
+QPushButton:focus, #extremeButton {
+    outline: 0;
+}
+
+
 #heading {
     font-size: 32px;
     font-family: Georgia;
@@ -52,15 +57,24 @@ QPushButton {
     color: #fff;
 }
 
-#button:hover {
+#button:hover, #button:focus {
     background-color: #e6e6e6;
 }
 
 #extremeButton:hover {
-    background-color: #8F3939;
+    background-color: #8f3939;
+}
+
+#extremeButton:focus {
+    background-color: #8f3939;
 }
 
 #quitButton:hover {
+    border: 2px solid #b3b3b3;
+    color: #b3b3b3
+}
+
+#quitButton:focus {
     border: 2px solid #b3b3b3;
     color: #b3b3b3
 }

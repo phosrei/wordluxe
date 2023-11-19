@@ -9,7 +9,6 @@ import random
 class WordluxeGame(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.keyboard_buttons = {}
 
         self.setWindowTitle("Wordluxe")
         self.setWindowIcon(QIcon(GAME_ICON_PATH))
@@ -138,6 +137,7 @@ class WordluxeGame(QMainWindow):
         self.create_buttons(layout, buttons, frame, function)
     
     def create_keyboard_layout(self):
+        self.keyboard_buttons = {}
         keyboard_layout = QVBoxLayout()
 
         for row in KEYBOARD:
@@ -169,7 +169,7 @@ class WordluxeGame(QMainWindow):
         else:
             button.pressed.connect(lambda key=key: self.add_letter(key))
 
-        button.pressed.connect(lambda: self.simulate_key_press(button))
+        button.pressed.connect(lambda: self.simulate_key_press(key))
 
         return button
     
@@ -184,22 +184,28 @@ class WordluxeGame(QMainWindow):
 
     def keyPressEvent(self, event):
         key = event.key()
+        key_func_map = self.key_function_mapping()
+
         if key == Qt.Key_Escape:
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
-        elif self.stacked_widget.currentIndex() == 3:
-            if key in self.key_function_mapping():
-                self.key_function_mapping()[key]()
-            elif event.text().isalpha():
-                self.add_letter(event.text().upper())
-            else:
-                super().keyPressEvent(event)
+        elif self.stacked_widget.currentIndex() == 3 and key in key_func_map:
+            func, key_name = key_func_map[key]
+            func()
+            if key_name: 
+                self.simulate_key_press(self.keyboard_buttons[key_name])
+        elif event.text().isalpha():
+            letter = event.text().upper()
+            self.add_letter(letter)
+            self.simulate_key_press(self.keyboard_buttons[letter])
+        else:
+            super().keyPressEvent(event)
 
     def key_function_mapping(self):
         if self.stacked_widget.currentIndex() == 3:
             return {
-                Qt.Key_Return: self.check_guess,
-                Qt.Key_Backspace: self.do_backspace,
-                Qt.Key_F3: self.show_answer
+                Qt.Key_Return: (self.check_guess, "ENTER"),
+                Qt.Key_Backspace: (self.do_backspace, "⌫"),
+                Qt.Key_F3: (self.show_answer, None)
             }
 
     def play_button_pressed(self):
@@ -256,18 +262,22 @@ class WordluxeGame(QMainWindow):
             self.highlight_incorrect_guess()
             return
 
+        word_copy = list(word)
+        guess_copy = list(guess)
+
         for i in range(len(word)):
             if guess[i] == word[i]:
                 self.highlight_letter(i, "correct")
-                word = word.replace(guess[i], "-", 1)
-                guess = guess.replace(guess[i], "-", 1)
+                word_copy[word_copy.index(guess[i])] = "-"
+                guess_copy[i] = "-"
                 self.set_key_color(i, "#6aaa64")
-            elif guess[i] in word:
+
+        for i in range(len(guess_copy)):
+            if guess_copy[i] in word_copy and guess_copy[i] != "-":
                 self.highlight_letter(i, "present")
-                word = word.replace(guess[i], "-", 1)
-                guess = guess.replace(guess[i], "-", 1)
+                word_copy[word_copy.index(guess_copy[i])] = "-"
                 self.set_key_color(i, "#c9b458")
-            else:
+            elif guess_copy[i] != "-":
                 self.highlight_letter(i, "absent")
                 self.set_key_color(i, "grey")
 
@@ -308,6 +318,7 @@ class WordluxeGame(QMainWindow):
         button.setFixedWidth(BUTTON_FIXED_WIDTH)
         button.clicked.connect(function)
         button.setCursor(Qt.PointingHandCursor)
+        button.setDefault(True)
         return button
 
     def create_buttons(self, layout, buttons, parent, function):
