@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer
 from config import *
@@ -101,8 +101,8 @@ class WordluxeGame(QMainWindow):
 
         return grid_frame
 
-    def create_grid_box(self, parent, i, j):
-        grid_box = QLabel(" ", parent)
+    def create_grid_box(self, parent, i, j, text=" "):
+        grid_box = QLabel(text, parent)
         grid_box.setAlignment(Qt.AlignCenter)
         grid_box.setObjectName("grid")
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
@@ -159,10 +159,6 @@ class WordluxeGame(QMainWindow):
         button.setFixedHeight(KEY_HEIGHT)
         button.setFixedWidth(KEY_WIDTH)
 
-        def simulate_key_press():
-            button.setStyleSheet("background-color: #a8adb0")
-            QTimer.singleShot(100, lambda: button.setStyleSheet("background-color: #b8bec1"))
-
         if key == "⌫":
             button.pressed.connect(self.do_backspace)
             button.setFixedWidth(BKSP_WIDTH)
@@ -173,13 +169,19 @@ class WordluxeGame(QMainWindow):
         else:
             button.pressed.connect(lambda key=key: self.add_letter(key))
 
-        button.pressed.connect(simulate_key_press)
+        button.pressed.connect(lambda: self.simulate_key_press(button))
 
         return button
     
+    def simulate_key_press(self, button):
+            current_color = button.palette().button().color().name()
+            dark_color = QColor(current_color).darker(125).name()
+            button.setStyleSheet(f"background-color: {dark_color}")
+            QTimer.singleShot(100, lambda: button.setStyleSheet(f"background-color: {current_color}"))
+    
     def set_key_color(self, i, color):
         self.keyboard_buttons[self.guess[i]].setStyleSheet(f"background-color: {color};")
-        
+
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:
