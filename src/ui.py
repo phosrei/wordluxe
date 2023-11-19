@@ -156,21 +156,27 @@ class WordluxeGame(QMainWindow):
     def create_key(self, key):
         button = QPushButton(key)
         button.setObjectName("key")
-        button.setFixedWidth(KEY_WIDTH)
         button.setFixedHeight(KEY_HEIGHT)
+        button.setFixedWidth(KEY_WIDTH)
+
+        def simulate_key_press():
+            button.setStyleSheet("background-color: #a8adb0")
+            QTimer.singleShot(100, lambda: button.setStyleSheet("background-color: #b8bec1"))
 
         if key == "⌫":
-            button.clicked.connect(self.do_backspace)
+            button.pressed.connect(self.do_backspace)
             button.setFixedWidth(BKSP_WIDTH)
         elif key == "ENTER":
-            button.clicked.connect(self.check_guess)
+            button.pressed.connect(self.check_guess)
             button.setObjectName("enterButton")
             button.setFixedWidth(ENTER_WIDTH)
         else:
-            button.clicked.connect(lambda checked, key=key: self.add_letter(key))
+            button.pressed.connect(lambda key=key: self.add_letter(key))
+
+        button.pressed.connect(simulate_key_press)
 
         return button
-
+    
     def set_key_color(self, i, color):
         self.keyboard_buttons[self.guess[i]].setStyleSheet(f"background-color: {color};")
         
@@ -178,12 +184,13 @@ class WordluxeGame(QMainWindow):
         key = event.key()
         if key == Qt.Key_Escape:
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
-        elif key in self.key_function_mapping():
-            self.key_function_mapping()[key]()
-        elif event.text().isalpha():
-            self.add_letter(event.text().upper())
-        else:
-            super().keyPressEvent(event)
+        elif self.stacked_widget.currentIndex() == 3:
+            if key in self.key_function_mapping():
+                self.key_function_mapping()[key]()
+            elif event.text().isalpha():
+                self.add_letter(event.text().upper())
+            else:
+                super().keyPressEvent(event)
 
     def key_function_mapping(self):
         if self.stacked_widget.currentIndex() == 3:
