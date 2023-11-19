@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtCore import Qt, QTimer, QSize
+from PyQt5.QtCore import Qt, QTimer
 from config import *
 import random
 
@@ -60,22 +60,20 @@ class WordluxeGame(QMainWindow):
     def setup_game_page(self):
         game_frame = self.create_frame("gframe")
         game_layout = QVBoxLayout(game_frame)
+        game_layout.setAlignment(Qt.AlignCenter)
         game_frame.setLayout(game_layout)
 
         grid_frame = self.create_grid_frame(game_frame)
         powerups_frame = self.create_powerups_frame(game_frame)
-
-        game_layout.addSpacing(TOP_SPACING)
         game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
 
         keyboard_frame = QFrame()
         keyboard_layout = self.create_keyboard_layout()
         keyboard_frame.setLayout(keyboard_layout)
-        game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter | Qt.AlignBottom)
-        game_layout.addSpacing(BOTTOM_SPACING)
+        game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter)
 
         powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
-        powerup_y = (game_frame.height() - powerups_frame.height()) // 4
+        powerup_y = (game_frame.height() - powerups_frame.height()) // 3
         powerups_frame.move(powerup_x, powerup_y)
 
         self.stacked_widget.addWidget(game_frame)
@@ -92,12 +90,9 @@ class WordluxeGame(QMainWindow):
         for i in range(self.max_guesses):
             row_labels = []
             for j in range(len(self.word)):
-                grid_label = QLabel(" ")
-                grid_label.setAlignment(Qt.AlignCenter)
-                grid_label.setObjectName("grid")
-                grid_label.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
-                row_labels.append(grid_label)
-                grid_layout.addWidget(grid_label, i, j)
+                grid_box = self.create_grid_box(grid_frame, i, j)
+                grid_layout.addWidget(grid_box, i, j)
+                row_labels.append(grid_box)
             self.board.append(row_labels)
 
         grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
@@ -105,6 +100,13 @@ class WordluxeGame(QMainWindow):
         grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
 
         return grid_frame
+
+    def create_grid_box(self, parent, i, j):
+        grid_box = QLabel(" ", parent)
+        grid_box.setAlignment(Qt.AlignCenter)
+        grid_box.setObjectName("grid")
+        grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
+        return grid_box
 
     def create_powerups_frame(self, parent):
         powerups_frame = QFrame(parent)
@@ -154,15 +156,16 @@ class WordluxeGame(QMainWindow):
     def create_key(self, key):
         button = QPushButton(key)
         button.setObjectName("key")
+        button.setFixedWidth(KEY_WIDTH)
         button.setFixedHeight(KEY_HEIGHT)
 
         if key == "⌫":
             button.clicked.connect(self.do_backspace)
-            button.setFixedWidth(ENTER_WIDTH)
+            button.setFixedWidth(BKSP_WIDTH)
         elif key == "ENTER":
             button.clicked.connect(self.check_guess)
             button.setObjectName("enterButton")
-            button.setFixedWidth(BKSP_WIDTH)
+            button.setFixedWidth(ENTER_WIDTH)
         else:
             button.clicked.connect(lambda checked, key=key: self.add_letter(key))
 
