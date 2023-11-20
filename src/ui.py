@@ -7,6 +7,7 @@ from config import *
 import random
 
 class WordluxeGame(QMainWindow):
+    # initialize the game
     def __init__(self):
         super().__init__()
 
@@ -17,30 +18,32 @@ class WordluxeGame(QMainWindow):
         self.setCentralWidget(self.stacked_widget)
         self.showFullScreen()
 
+        # set the styling of the window and widgets
         with open(STYLE_FILE_PATH, "r") as f:
             QApplication.instance().setStyleSheet(f.read())
 
         self.setup_main_menu_page()
 
     def setup_main_menu_page(self):
+        # create the main menu frame
         main_menu_frame = self.create_frame("mmframe")
         main_layout = QVBoxLayout(main_menu_frame)
         main_layout.setAlignment(Qt.AlignCenter)
-
+        # add the game logo to the main menu frame
         game_logo = QSvgWidget(GAME_LOGO_PATH, main_menu_frame)
         game_logo.setFixedSize(game_logo.sizeHint())
         main_layout.addWidget(game_logo)
         main_layout.addSpacing(HEADING_SPACING)
-
+        # add the heading to the main menu frame
         heading = QLabel("The new, and \nimproved wordle!", main_menu_frame)
         heading.setObjectName("heading")
         heading.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(heading)
         main_layout.addSpacing(HEADING_SPACING)
-
+        # adds a button frame for the buttons
         main_buttons_layout = QHBoxLayout()
         main_buttons_layout.setAlignment(Qt.AlignCenter)
-
+        # add buttons, style them, and add to the main menu frame
         for button_text, button_method, button_name in [("Play", self.play_button_pressed, "button"), ("Quit", self.quit_button_pressed, "quitButton")]:
             button = self.create_button(button_text, main_menu_frame, button_method, button_name)
             main_buttons_layout.addWidget(button)
@@ -48,6 +51,11 @@ class WordluxeGame(QMainWindow):
 
         main_layout.addLayout(main_buttons_layout)
 
+        """
+        the line of code below adds the main menu frame to the stacked widget.
+        The stacked_widget is a container that can hold and manage multiple widgets, 
+        but only one widget is visible at a time. 
+        """
         self.stacked_widget.addWidget(main_menu_frame)
 
     def setup_second_page(self):
@@ -57,28 +65,29 @@ class WordluxeGame(QMainWindow):
         self.page_template("dframe", "Choose difficulty", DIFFICULTY_BUTTONS, self.dif_buttons_pressed)
 
     def setup_game_page(self):
+        # create the game frame
         game_frame = self.create_frame("gframe")
         game_layout = QVBoxLayout(game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
         game_frame.setLayout(game_layout)
-
-        grid_frame = self.create_grid_frame(game_frame)
-        powerups_frame = self.create_powerups_frame(game_frame)
+        # create the grid and add to the game frame 
+        grid_frame = self.create_grid_frame()
         game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
-
+        # create an on-screen keyboard
         keyboard_frame = QFrame()
         keyboard_layout = self.create_keyboard_layout()
         keyboard_frame.setLayout(keyboard_layout)
         game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter)
-
+        # add powerups to the side of the grid
+        powerups_frame = self.create_powerups_frame(game_frame)
         powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
         powerup_y = (game_frame.height() - powerups_frame.height()) // 3
         powerups_frame.move(powerup_x, powerup_y)
 
         self.stacked_widget.addWidget(game_frame)
 
-    def create_grid_frame(self, parent):
-        grid_frame = QFrame(parent)
+    def create_grid_frame(self):
+        grid_frame = self.create_frame("gridframe")
         grid_layout = QGridLayout()
         grid_frame.setLayout(grid_layout)
 
@@ -86,21 +95,25 @@ class WordluxeGame(QMainWindow):
         self.num_guess = 0
         self.guess = ""
 
-        for i in range(self.max_guesses):
+        # create the grid based of the length of the word and max guesses
+        for row in range(self.max_guesses):
             row_labels = []
-            for j in range(len(self.word)):
-                grid_box = self.create_grid_box(grid_frame, i, j)
-                grid_layout.addWidget(grid_box, i, j)
+            for col in range(len(self.word)):
+                grid_box = self.create_grid_box(grid_frame)
+                grid_layout.addWidget(grid_box, row, col)
+                # add the grid box to the row
                 row_labels.append(grid_box)
+                # add the row to the board
             self.board.append(row_labels)
 
+        # set the size of the grid
         grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
         grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
         grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
 
         return grid_frame
 
-    def create_grid_box(self, parent, i, j, text=" "):
+    def create_grid_box(self, parent, text=" "):
         grid_box = QLabel(text, parent)
         grid_box.setAlignment(Qt.AlignCenter)
         grid_box.setObjectName("grid")
@@ -111,7 +124,7 @@ class WordluxeGame(QMainWindow):
         powerups_frame = QFrame(parent)
         powerups_layout = QVBoxLayout()
         powerups_frame.setLayout(powerups_layout)
-
+        # for each powerup, add it to the powerups frame, and add spacing between them
         for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
             powerup = QSvgWidget(powerups, powerups_frame)
             powerup.setFixedSize(POWERUP_WIDTH, POWERUP_WIDTH)
@@ -122,6 +135,7 @@ class WordluxeGame(QMainWindow):
         return powerups_frame
 
     def page_template(self, frame_name, text, buttons, function):
+        # a page template for both the category and difficulty pages
         frame = self.create_frame(frame_name)
         self.stacked_widget.addWidget(frame)
 
@@ -159,6 +173,7 @@ class WordluxeGame(QMainWindow):
         button.setFixedHeight(KEY_HEIGHT)
         button.setFixedWidth(KEY_WIDTH)
 
+        # add button functionality to backspace and enter keys
         if key == "⌫":
             button.pressed.connect(self.do_backspace)
             button.setFixedWidth(BKSP_WIDTH)
@@ -174,6 +189,7 @@ class WordluxeGame(QMainWindow):
         return button
     
     def simulate_key_press(self, button):
+            # make keys appear to be pressed by darkening the color of the key
             current_color = button.palette().button().color().name()
             dark_color = QColor(current_color).darker(125).name()
             button.setStyleSheet(f"background-color: {dark_color}")
@@ -185,7 +201,11 @@ class WordluxeGame(QMainWindow):
     def keyPressEvent(self, event):
         key = event.key()
         key_func_map = self.key_function_mapping()
-
+        """
+        if the key pressed is the escape key, go back to the previous page.
+        if the current page is the game page, check if the key pressed is a letter.
+        if the key pressed is a letter, add it to the guess.
+        """
         if key == Qt.Key_Escape:
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
         elif self.stacked_widget.currentIndex() == 3 and key in key_func_map:
@@ -211,7 +231,7 @@ class WordluxeGame(QMainWindow):
     def play_button_pressed(self):
         if self.stacked_widget.count() < 2:
             self.setup_second_page()
-        self.stacked_widget.setCurrentIndex(1)
+        self.stacked_widget.setCurrentIndex(1) # go to the category page
 
     def quit_button_pressed(self):
         self.close()
@@ -220,7 +240,7 @@ class WordluxeGame(QMainWindow):
         self.category = self.sender().text()
         if self.stacked_widget.count() < 3:
             self.setup_third_page()
-        self.stacked_widget.setCurrentIndex(2)
+        self.stacked_widget.setCurrentIndex(2) # go to the difficulty page
             
     def dif_buttons_pressed(self):
         self.difficulty = self.sender().text()
@@ -228,7 +248,7 @@ class WordluxeGame(QMainWindow):
         if self.stacked_widget.count() > 3:
             self.stacked_widget.removeWidget(self.stacked_widget.widget(3))
         self.get_random_word()
-        self.stacked_widget.setCurrentIndex(3)
+        self.stacked_widget.setCurrentIndex(3) # go to the game page
 
     def get_grid_row(self):
         difficulty_levels = {
@@ -238,9 +258,11 @@ class WordluxeGame(QMainWindow):
         self.max_guesses = difficulty_levels.get(self.difficulty, 6)
        
     def reset_game_state(self):
+        # initalizes the game state back to the default
         self.board = []
         self.num_guess = 0
         self.guess = ""        
+
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
             self.board[self.num_guess][len(self.guess)].setText(key)
@@ -248,7 +270,7 @@ class WordluxeGame(QMainWindow):
 
     def do_backspace(self):
         if len(self.guess) > 0:
-            self.guess = self.guess[0:-1]
+            self.guess = self.guess[:-1]
             self.board[self.num_guess][len(self.guess)].setText(" ")
 
     def show_answer(self):
