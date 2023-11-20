@@ -71,7 +71,7 @@ class WordluxeGame(QMainWindow):
         game_layout.setAlignment(Qt.AlignCenter)
         game_frame.setLayout(game_layout)
         # create the grid and add to the game frame 
-        grid_frame = self.create_grid_frame()
+        grid_frame = self.create_grid()
         game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
         # create an on-screen keyboard
         keyboard_frame = QFrame()
@@ -86,7 +86,7 @@ class WordluxeGame(QMainWindow):
 
         self.stacked_widget.addWidget(game_frame)
 
-    def create_grid_frame(self):
+    def create_grid(self):
         grid_frame = self.create_frame("gridframe")
         grid_layout = QGridLayout()
         grid_frame.setLayout(grid_layout)
@@ -211,7 +211,7 @@ class WordluxeGame(QMainWindow):
         elif self.stacked_widget.currentIndex() == 3 and key in key_func_map:
             func, key_name = key_func_map[key]
             func()
-            if key_name: 
+            if key_name is not None: 
                 self.simulate_key_press(self.keyboard_buttons[key_name])
         elif event.text().isalpha():
             letter = event.text().upper()
