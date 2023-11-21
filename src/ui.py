@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QSize
 from config import *
 import random
 
@@ -120,19 +120,41 @@ class WordluxeGame(QMainWindow):
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
         return grid_box
 
+
     def create_powerups_frame(self, parent):
         powerups_frame = QFrame(parent)
         powerups_layout = QVBoxLayout()
         powerups_frame.setLayout(powerups_layout)
-        # for each powerup, add it to the powerups frame, and add spacing between them
         for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
-            powerup = QSvgWidget(powerups, powerups_frame)
-            powerup.setFixedSize(POWERUP_WIDTH, POWERUP_WIDTH)
+            powerup = QToolButton(powerups_frame)
+            powerup.setCursor(Qt.PointingHandCursor)
+            powerup.setIcon(QIcon(powerups))
+            powerup.setObjectName("powerupButton")
+            powerup.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
+            powerup.clicked.connect(self.on_powerup_clicked)
             powerups_layout.addWidget(powerup)
             powerups_layout.addSpacing(ICON_SPACING)
         powerups_frame.adjustSize()
 
         return powerups_frame
+    
+    def on_powerup_clicked(self):
+        clicked_button = self.sender()
+        if clicked_button.icon().name() == LETTER_ERASER_PATH:
+            self.letter_eraser()
+        elif clicked_button.icon().name() == INVINCIBLE_PATH:
+            self.invincible()
+        elif clicked_button.icon().name() == VOWEL_PATH:
+            self.vowel()
+
+    def letter_eraser(self):
+        ...
+    
+    def invincible(self):
+        ...
+
+    def vowel(self):
+        ...
 
     def page_template(self, frame_name, text, buttons, function):
         # a page template for both the category and difficulty pages
@@ -184,7 +206,7 @@ class WordluxeGame(QMainWindow):
         else:
             button.pressed.connect(lambda key=key: self.add_letter(key))
 
-        button.pressed.connect(lambda: self.simulate_key_press(key))
+        button.pressed.connect(lambda: self.simulate_key_press(button))
 
         return button
     

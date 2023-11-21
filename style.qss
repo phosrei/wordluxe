@@ -57,6 +57,10 @@ QPushButton:focus, #extremeButton {
     color: #fff;
 }
 
+#powerupButton {
+    background: transparent;
+}
+
 #button:hover, #button:focus {
     background-color: #e6e6e6;
 }
