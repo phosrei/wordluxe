@@ -56,7 +56,7 @@ QPushButton:focus, #extremeButton {
     background-color: transparent;
     color: #fff;
 }
-
+ 
 #powerupButton {
     background: transparent;
 }

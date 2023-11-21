@@ -1,4 +1,5 @@
 import sys
+import string
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
@@ -120,11 +121,11 @@ class WordluxeGame(QMainWindow):
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
         return grid_box
 
-
     def create_powerups_frame(self, parent):
         powerups_frame = QFrame(parent)
         powerups_layout = QVBoxLayout()
         powerups_frame.setLayout(powerups_layout)
+        self.powerup_buttons = {}  # Store the powerup buttons
         for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
             powerup = QToolButton(powerups_frame)
             powerup.setCursor(Qt.PointingHandCursor)
@@ -134,22 +135,29 @@ class WordluxeGame(QMainWindow):
             powerup.clicked.connect(self.on_powerup_clicked)
             powerups_layout.addWidget(powerup)
             powerups_layout.addSpacing(ICON_SPACING)
+            self.powerup_buttons[powerups] = powerup  # Add the button to the dictionary
         powerups_frame.adjustSize()
 
         return powerups_frame
     
     def on_powerup_clicked(self):
         clicked_button = self.sender()
-        if clicked_button.icon().name() == LETTER_ERASER_PATH:
-            self.letter_eraser()
-        elif clicked_button.icon().name() == INVINCIBLE_PATH:
-            self.invincible()
-        elif clicked_button.icon().name() == VOWEL_PATH:
-            self.vowel()
+        for powerup_path, button in self.powerup_buttons.items():
+            if clicked_button is button:
+                if powerup_path == LETTER_ERASER_PATH:
+                    self.letter_eraser()
+                elif powerup_path == INVINCIBLE_PATH:
+                    self.invincible()
+                elif powerup_path == VOWEL_PATH:
+                    self.vowel()
 
     def letter_eraser(self):
-        ...
-    
+        while True:
+            random_char = random.choice(string.ascii_uppercase)
+            if all(random_char not in label.text() for row in self.board for label in row) and random_char in self.word:
+                self.set_key_color(random_char, "#c9b458")
+                break
+
     def invincible(self):
         ...
 
@@ -217,8 +225,8 @@ class WordluxeGame(QMainWindow):
             button.setStyleSheet(f"background-color: {dark_color}")
             QTimer.singleShot(100, lambda: button.setStyleSheet(f"background-color: {current_color}"))
     
-    def set_key_color(self, i, color):
-        self.keyboard_buttons[self.guess[i]].setStyleSheet(f"background-color: {color};")
+    def set_key_color(self, char, color):
+        self.keyboard_buttons[char].setStyleSheet(f"background-color: {color};")
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -314,16 +322,16 @@ class WordluxeGame(QMainWindow):
                 self.highlight_letter(i, "correct")
                 word_copy[word_copy.index(guess[i])] = "-"
                 guess_copy[i] = "-"
-                self.set_key_color(i, "#6aaa64")
+                self.set_key_color(self.guess[i], "#6aaa64")
 
         for i in range(len(guess_copy)):
             if guess_copy[i] in word_copy and guess_copy[i] != "-":
                 self.highlight_letter(i, "present")
                 word_copy[word_copy.index(guess_copy[i])] = "-"
-                self.set_key_color(i, "#c9b458")
+                self.set_key_color(self.guess[i], "#c9b458")
             elif guess_copy[i] != "-":
                 self.highlight_letter(i, "absent")
-                self.set_key_color(i, "grey")
+                self.set_key_color(self.guess[i], "grey")
 
         if self.num_guess == (self.max_guesses - 1) or word == guess:
             self.show_answer()
