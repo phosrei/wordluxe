@@ -168,13 +168,14 @@ class WordluxeGame(QMainWindow):
 
     def vowel(self):
         while True:
-            if all(vowel in self.guess_store or vowel not in self.word for vowel in VOWELS):
+            if all(letter in self.guess_store or letter not in self.word for letter in VOWELS):
                 return
 
             random_char = random.choice(VOWELS)
-            if random_char in self.word and random_char not in self.guess_store:
+            if random_char not in self.guess_store and random_char in self.word:
                 self.set_key_color(random_char, "#c9b458")
                 self.guess_store += random_char
+                print(self.guess_store)
                 break
 
     def page_template(self, frame_name, text, buttons, function):
@@ -322,7 +323,7 @@ class WordluxeGame(QMainWindow):
     def check_guess(self):
         guess = self.guess.lower()
         word = self.word.lower()
-        self.guess_store = self.guess
+        self.guess_store += self.guess
 
         if guess not in DICTIONARY or len(guess) != len(word):
             self.highlight_incorrect_guess()

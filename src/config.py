@@ -62,7 +62,6 @@ INVINCIBLE_PATH = "assets/invincible.svg"
 VOWEL_PATH = "assets/vowel.svg"
 STYLE_FILE_PATH = 'style.qss'
 
-
 # Powerup dimensions
 POWERUP_WIDTH = 60
 POWERUP_HEIGHT = 60
