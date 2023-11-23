@@ -162,7 +162,11 @@ class WordluxeGame(QMainWindow):
         ...
 
     def vowel(self):
-        ...
+        while True:
+            random_char = random.choice(VOWELS)
+            if all(random_char not in label.text() for row in self.board for label in row) and random_char in self.word:
+                self.set_key_color(random_char, "#6aaa64")
+                break
 
     def page_template(self, frame_name, text, buttons, function):
         # a page template for both the category and difficulty pages
