@@ -61,12 +61,12 @@ INVINCIBLE_PATH = "assets/invincible.svg"
 VOWEL_PATH = "assets/vowel.svg"
 STYLE_FILE_PATH = 'style.qss'
 
-
 # Powerup dimensions
 POWERUP_WIDTH = 60
 POWERUP_HEIGHT = 60
 
 # Others
+VOWELS = 'AEIUO'
 EXTREME_DIFFICULTY = "Extreme"
 TOP_SPACING = 140
 BOTTOM_SPACING = 40
