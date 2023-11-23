@@ -95,6 +95,7 @@ class WordluxeGame(QMainWindow):
         self.board = []
         self.num_guess = 0
         self.guess = ""
+        self.guess_store = ""
 
         # create the grid based of the length of the word and max guesses
         for row in range(self.max_guesses):
@@ -153,16 +154,28 @@ class WordluxeGame(QMainWindow):
 
     def letter_eraser(self):
         while True:
-            random_char = random.choice(string.ascii_uppercase)
-            if all(random_char not in label.text() for row in self.board for label in row) and random_char in self.word:
-                self.set_key_color(random_char, "#c9b458")
+            if all(letter in self.guess_store or letter in self.word for letter in ALPHABET):
+                return
+
+            random_char = random.choice(ALPHABET)
+            if random_char not in self.guess_store and random_char not in self.word:
+                self.set_key_color(random_char, "grey")
+                self.guess_store += random_char
                 break
 
     def invincible(self):
         ...
 
     def vowel(self):
-        ...
+        while True:
+            if all(vowel in self.guess_store or vowel not in self.word for vowel in VOWELS):
+                return
+
+            random_char = random.choice(VOWELS)
+            if random_char in self.word and random_char not in self.guess_store:
+                self.set_key_color(random_char, "#c9b458")
+                self.guess_store += random_char
+                break
 
     def page_template(self, frame_name, text, buttons, function):
         # a page template for both the category and difficulty pages
@@ -309,6 +322,7 @@ class WordluxeGame(QMainWindow):
     def check_guess(self):
         guess = self.guess.lower()
         word = self.word.lower()
+        self.guess_store = self.guess
 
         if guess not in DICTIONARY or len(guess) != len(word):
             self.highlight_incorrect_guess()
@@ -358,6 +372,7 @@ class WordluxeGame(QMainWindow):
     def get_random_word(self):
         self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
         self.setup_game_page()
+        
 
     def create_frame(self, object_name):
         frame = QFrame(self.stacked_widget)

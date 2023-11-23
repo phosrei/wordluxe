@@ -1,5 +1,6 @@
 from nltk.corpus import words
 from wordlist import categories
+import string
 
 # Dictionary
 DICTIONARY = set(words.words())
@@ -67,6 +68,8 @@ POWERUP_WIDTH = 60
 POWERUP_HEIGHT = 60
 
 # Others
+VOWELS = 'AEIUO'
+ALPHABET = string.ascii_uppercase
 EXTREME_DIFFICULTY = "Extreme"
 TOP_SPACING = 140
 BOTTOM_SPACING = 40
