@@ -25,7 +25,6 @@ class WordluxeGame(QMainWindow):
 
         self.timer_label = QLabel(self)
         self.timer_label.setObjectName("timerLabel")
-        self.timer_label.setAlignment(Qt.AlignCenter)
 
         # set the styling of the window and widgets
         with open(STYLE_FILE_PATH, "r") as f:
@@ -79,6 +78,16 @@ class WordluxeGame(QMainWindow):
         game_layout = QVBoxLayout(game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
         game_frame.setLayout(game_layout)
+
+        if self.difficulty.lower() == "extreme":
+            self.timer_label = QLabel("03:00", game_frame)
+            self.timer_label.setObjectName("timerLabel")
+            self.timer_label.setFixedSize(200, 100)
+            self.timer_label.setAlignment(Qt.AlignCenter)
+            self.timer_label.setStyleSheet("QLabel { font-size: 60px; }")
+
+            game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
+
         # create the grid and add to the game frame 
         grid_frame = self.create_grid()
         game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
@@ -92,15 +101,6 @@ class WordluxeGame(QMainWindow):
         powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
         powerup_y = (game_frame.height() - powerups_frame.height()) // 3
         powerups_frame.move(powerup_x, powerup_y)
-
-        if self.difficulty.lower() == "extreme":
-            self.timer_label = QLabel("3:00", game_frame)
-            self.timer_label.setObjectName("timerLabel")
-            self.timer_label.setFixedSize(350, 100)
-            self.timer_label.setAlignment(Qt.AlignCenter)
-            self.timer_label.setStyleSheet("QLabel { font-size: 60px; }")
-
-            game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
 
         self.stacked_widget.addWidget(game_frame)
 
