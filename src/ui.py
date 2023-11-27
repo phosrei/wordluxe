@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
+from datetime import datetime, timedelta
 from config import *
 import random
 
@@ -17,6 +18,12 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
         self.showFullScreen()
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.timer_timeout)
+
+        self.timer_label = QLabel(self)
+        self.timer_label.setObjectName("timerLabel")
 
         # set the styling of the window and widgets
         with open(STYLE_FILE_PATH, "r") as f:
@@ -86,6 +93,16 @@ class WordluxeGame(QMainWindow):
         game_layout = QVBoxLayout(game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
         game_frame.setLayout(game_layout)
+
+        if self.difficulty.lower() == "extreme":
+            self.timer_label = QLabel("03:00", game_frame)
+            self.timer_label.setObjectName("timerLabel")
+            self.timer_label.setFixedSize(200, 100)
+            self.timer_label.setAlignment(Qt.AlignCenter)
+            self.timer_label.setStyleSheet("QLabel { font-size: 60px; }")
+
+            game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
+
         # create the grid and add to the game frame 
         grid_frame = self.create_grid()
         game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
@@ -334,6 +351,10 @@ class WordluxeGame(QMainWindow):
     def dif_buttons_pressed(self):
         self.difficulty = self.sender().text()
         self.get_grid_row()
+
+        if self.difficulty.lower() == "extreme":
+            self.start_timer()
+        
         if self.stacked_widget.count() > 3:
             self.stacked_widget.removeWidget(self.stacked_widget.widget(3))
         self.get_random_word()
@@ -349,6 +370,32 @@ class WordluxeGame(QMainWindow):
             "Extreme": 3
         }
         self.max_guesses = difficulty_levels.get(self.difficulty, 6)
+
+    def start_timer(self):
+        self.remaining_time = 180  # 3 minutes in seconds
+        self.timer.start(1000)  # Timer updates every 1 second
+        self.update_timer_label()
+
+    def update_timer_label(self):
+        minutes = self.remaining_time // 60
+        seconds = self.remaining_time % 60
+        self.timer_label.setText(f"{minutes:02d}:{seconds:02d}")
+
+    def timer_timeout(self):
+        self.remaining_time -= 1
+        if self.remaining_time <= 10:
+            self.timer_label.setStyleSheet("QLabel { font-size: 60px; color: #ba2d2b; }")
+        self.update_timer_label()
+
+        if self.remaining_time <= 0:
+            self.timer.stop()
+            self.show_answer()
+       
+    def reset_game_state(self):
+        # initalizes the game state back to the default
+        self.board = []
+        self.num_guess = 0
+        self.guess = ""        
 
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
