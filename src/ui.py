@@ -164,7 +164,15 @@ class WordluxeGame(QMainWindow):
                 break
 
     def invincible(self):
-        ...
+        for row in self.board:
+            for label in row:
+                label.setText(" ")
+                label.setStyleSheet(self.set_label_color("transparent", "2px solid grey"))
+        self.guess = ""
+        self.guess_store += self.guess
+
+        if self.num_guess > 0:
+            self.num_guess -= 1
 
     def vowel(self):
         while True:
@@ -296,8 +304,8 @@ class WordluxeGame(QMainWindow):
 
     def get_grid_row(self):
         difficulty_levels = {
-            "Hard": 5,
-            "Extreme": 4
+            "Hard": 4,
+            "Extreme": 3
         }
         self.max_guesses = difficulty_levels.get(self.difficulty, 6)
        
@@ -353,7 +361,7 @@ class WordluxeGame(QMainWindow):
         else:
             self.num_guess += 1
             self.guess = ""
-
+    
     def highlight_letter(self, i, type):
         self.board[self.num_guess][i].setStyleSheet(self.set_label_color(LETTER_COLORS[type], "none"))
 
@@ -366,7 +374,7 @@ class WordluxeGame(QMainWindow):
         for i in range(len(self.word)):
             self.board[self.num_guess][i].setStyleSheet(self.set_label_color("transparent", "2px solid grey"))
             self.do_backspace()
-            
+
     def set_label_color(self, color, border):
         return f"QLabel {{font-family: Inter; font-weight: bold; color: black; background-color: {color}; font-size: 48px; border: {border};}}"
 
@@ -374,7 +382,6 @@ class WordluxeGame(QMainWindow):
         self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
         self.setup_game_page()
         
-
     def create_frame(self, object_name):
         frame = QFrame(self.stacked_widget)
         frame.setGeometry(0, 0, self.width(), self.height())
