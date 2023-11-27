@@ -10,7 +10,6 @@ QPushButton:focus, #extremeButton {
     outline: 0;
 }
 
-
 #heading {
     font-size: 32px;
     font-family: Georgia;
@@ -42,6 +41,13 @@ QPushButton:focus, #extremeButton {
 #mmframe, #cframe, #dframe, #gframe {
     background-image:url(assets/background1.png);
 }
+
+#timerLabel {
+    font-size: 60px; 
+    font-family: Inter; 
+    color: white; 
+    font-weight: bold;
+    } 
 
 #grid {
     font-family: Inter; 

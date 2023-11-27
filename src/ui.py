@@ -101,7 +101,10 @@ class WordluxeGame(QMainWindow):
             self.timer_label.setAlignment(Qt.AlignCenter)
             self.timer_label.setStyleSheet("QLabel { font-size: 60px; }")
 
-            game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
+            # set the position of the timer label
+            timer_label_x = game_frame.width() // 2 - self.timer_label.width() // 2
+            timer_label_y = 150
+            self.timer_label.move(timer_label_x, timer_label_y)
 
         # create the grid and add to the game frame 
         grid_frame = self.create_grid()
@@ -120,9 +123,9 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.addWidget(game_frame)
 
     def create_grid(self):
-        grid_frame = self.create_frame("gridframe")
-        grid_layout = QGridLayout()
-        grid_frame.setLayout(grid_layout)
+        self.grid_frame = self.create_frame("gridframe")
+        self.grid_layout = QGridLayout()
+        self.grid_frame.setLayout(self.grid_layout)
 
         self.invincible_clicked = False
         self.num_guess = 0
@@ -134,19 +137,19 @@ class WordluxeGame(QMainWindow):
         for row in range(self.max_guesses):
             row_labels = []
             for col in range(len(self.word)):
-                grid_box = self.create_grid_box(grid_frame)
-                grid_layout.addWidget(grid_box, row, col)
+                grid_box = self.create_grid_box(self.grid_frame)
+                self.grid_layout.addWidget(grid_box, row, col)
                 # add the grid box to the row
                 row_labels.append(grid_box)
                 # add the row to the board
             self.board.append(row_labels)
 
         # set the size of the grid
-        grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
-        grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
-        grid_frame.setFixedSize(grid_frame_width, grid_frame_height)
+        self.grid_frame_width = len(self.word) * (BOX_WIDTH + GAP_SIZE)
+        self.grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
+        self.grid_frame.setFixedSize(self.grid_frame_width, self.grid_frame_height)
 
-        return grid_frame
+        return self.grid_frame
 
     def create_grid_box(self, parent, text=" "):
         grid_box = QLabel(text, parent)
@@ -220,12 +223,12 @@ class WordluxeGame(QMainWindow):
         word = self.word.lower()
         self.guess_store += self.guess
 
-        word_copy = list(word)
-        guess_copy = list(guess)
-
         if guess not in DICTIONARY or len(guess) != len(word):
             self.highlight_incorrect_guess()
             return
+
+        word_copy = list(word)
+        guess_copy = list(guess)
 
         for i in range(len(word)):
             if guess[i] == word[i]:
@@ -243,15 +246,30 @@ class WordluxeGame(QMainWindow):
                 self.highlight_letter(i, "absent")
                 self.set_key_color(self.guess[i], "grey")
 
-        if self.invincible_clicked:
-                self.invincible()
-                self.invincible_clicked = False
-
         if self.num_guess == (self.max_guesses - 1) or word == guess:
             self.show_answer()
-        else:
-            self.num_guess += 1
-            self.guess = ""
+        elif self.invincible_clicked:
+            self.invincible_clicked = False
+            self.invincible()
+        self.num_guess += 1
+        self.guess = ""
+
+
+    def page_template(self, frame_name, text, buttons, function):
+        # a page template for both the category and difficulty pages
+        frame = self.create_frame(frame_name)
+        self.stacked_widget.addWidget(frame)
+
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
+
+        label = QLabel(text, frame)
+        label.setObjectName("heading")
+        label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(label)
+        layout.addSpacing(HEADING_SPACING)
+
+        self.create_buttons(layout, buttons, frame, function)
     
     def create_keyboard_layout(self):
         self.keyboard_buttons = {}
@@ -352,7 +370,7 @@ class WordluxeGame(QMainWindow):
         self.difficulty = self.sender().text()
         self.get_grid_row()
 
-        if self.difficulty.lower() == "extreme":
+        if self.difficulty == EXTREME_DIFFICULTY:
             self.start_timer()
         
         if self.stacked_widget.count() > 3:
@@ -383,8 +401,6 @@ class WordluxeGame(QMainWindow):
 
     def timer_timeout(self):
         self.remaining_time -= 1
-        if self.remaining_time <= 10:
-            self.timer_label.setStyleSheet("QLabel { font-size: 60px; color: #ba2d2b; }")
         self.update_timer_label()
 
         if self.remaining_time <= 0:
