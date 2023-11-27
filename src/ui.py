@@ -1,5 +1,4 @@
 import sys
-import string
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
@@ -65,6 +64,22 @@ class WordluxeGame(QMainWindow):
     def setup_third_page(self):
         self.page_template("dframe", "Choose difficulty", DIFFICULTY_BUTTONS, self.dif_buttons_pressed)
 
+    def page_template(self, frame_name, text, buttons, function):
+        # a page template for both the category and difficulty pages
+        frame = self.create_frame(frame_name)
+        self.stacked_widget.addWidget(frame)
+
+        layout = QVBoxLayout()
+        layout.setAlignment(Qt.AlignCenter)
+
+        label = QLabel(text, frame)
+        label.setObjectName("heading")
+        label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(label)
+        layout.addSpacing(HEADING_SPACING)
+
+        self.create_buttons(layout, buttons, frame, function)
+
     def setup_game_page(self):
         # create the game frame
         game_frame = self.create_frame("gframe")
@@ -92,10 +107,11 @@ class WordluxeGame(QMainWindow):
         grid_layout = QGridLayout()
         grid_frame.setLayout(grid_layout)
 
-        self.board = []
+        self.invincible_clicked = False
         self.num_guess = 0
-        self.guess = ""
+        self.board = []
         self.guess_store = ""
+        self.guess = ""
 
         # create the grid based of the length of the word and max guesses
         for row in range(self.max_guesses):
@@ -143,64 +159,82 @@ class WordluxeGame(QMainWindow):
     
     def on_powerup_clicked(self):
         clicked_button = self.sender()
+        powerup_actions = {
+            LETTER_ERASER_PATH: self.letter_eraser,
+            INVINCIBLE_PATH: self.invincible,
+            VOWEL_PATH: self.reveal_vowel
+        }
         for powerup_path, button in self.powerup_buttons.items():
             if clicked_button is button:
-                if powerup_path == LETTER_ERASER_PATH:
-                    self.letter_eraser()
-                elif powerup_path == INVINCIBLE_PATH:
-                    self.invincible()
-                elif powerup_path == VOWEL_PATH:
-                    self.vowel()
+                if powerup_path == INVINCIBLE_PATH:
+                    self.invincible_clicked = True
+                else:
+                    powerup_actions[powerup_path]()
 
     def letter_eraser(self):
-        while True:
-            if all(letter in self.guess_store or letter in self.word for letter in ALPHABET):
-                return
-
-            random_char = random.choice(ALPHABET)
-            if random_char not in self.guess_store and random_char not in self.word:
-                self.set_key_color(random_char, "grey")
-                self.guess_store += random_char
-                break
+        remaining_letters = set(ALPHABET) - set(self.guess_store) - set(self.word)
+        if remaining_letters:
+            random_char = random.choice(list(remaining_letters))
+            self.set_key_color(random_char, "grey")
+            self.guess_store += random_char
 
     def invincible(self):
-        for row in self.board:
-            for label in row:
-                label.setText(" ")
-                label.setStyleSheet(self.set_label_color("transparent", "2px solid grey"))
-        self.guess = ""
+        row_labels = []
+        for col in range(len(self.word)):
+            grid_box = self.create_grid_box(self.grid_frame)
+            self.grid_layout.addWidget(grid_box, self.max_guesses, col)
+            row_labels.append(grid_box)
+        self.board.append(row_labels)
+        self.max_guesses += 1
+        grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
+        self.grid_frame.setFixedSize(self.grid_frame_width, grid_frame_height)
+
+    def reveal_vowel(self):
+        remaining_vowels = set(VOWELS) - set(self.guess_store)
+        remaining_vowels_in_word = [vowel for vowel in remaining_vowels if vowel in self.word]
+
+        if remaining_vowels_in_word:
+            random_char = random.choice(remaining_vowels_in_word)
+            self.set_key_color(random_char, "#c9b458")
+            self.guess_store += random_char
+
+    def check_guess(self):
+        guess = self.guess.lower()
+        word = self.word.lower()
         self.guess_store += self.guess
 
-        if self.num_guess > 0:
-            self.num_guess -= 1
+        word_copy = list(word)
+        guess_copy = list(guess)
 
-    def vowel(self):
-        while True:
-            if all(letter in self.guess_store or letter not in self.word for letter in VOWELS):
-                return
+        if guess not in DICTIONARY or len(guess) != len(word):
+            self.highlight_incorrect_guess()
+            return
 
-            random_char = random.choice(VOWELS)
-            if random_char not in self.guess_store and random_char in self.word:
-                self.set_key_color(random_char, "#c9b458")
-                self.guess_store += random_char
-                print(self.guess_store)
-                break
+        for i in range(len(word)):
+            if guess[i] == word[i]:
+                self.highlight_letter(i, "correct")
+                word_copy[word_copy.index(guess[i])] = "-"
+                guess_copy[i] = "-"
+                self.set_key_color(self.guess[i], "#6aaa64")
 
-    def page_template(self, frame_name, text, buttons, function):
-        # a page template for both the category and difficulty pages
-        frame = self.create_frame(frame_name)
-        self.stacked_widget.addWidget(frame)
+        for i in range(len(guess_copy)):
+            if guess_copy[i] in word_copy and guess_copy[i] != "-":
+                self.highlight_letter(i, "present")
+                word_copy[word_copy.index(guess_copy[i])] = "-"
+                self.set_key_color(self.guess[i], "#c9b458")
+            elif guess_copy[i] != "-":
+                self.highlight_letter(i, "absent")
+                self.set_key_color(self.guess[i], "grey")
 
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignCenter)
+        if self.invincible_clicked:
+                self.invincible()
+                self.invincible_clicked = False
 
-        label = QLabel(text, frame)
-        label.setObjectName("heading")
-        label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(label)
-        layout.addSpacing(HEADING_SPACING)
-
-        self.create_buttons(layout, buttons, frame, function)
+        if self.num_guess == (self.max_guesses - 1) or word == guess:
+            self.show_answer()
+        else:
+            self.num_guess += 1
+            self.guess = ""
     
     def create_keyboard_layout(self):
         self.keyboard_buttons = {}
@@ -252,15 +286,18 @@ class WordluxeGame(QMainWindow):
 
     def keyPressEvent(self, event):
         key = event.key()
-        key_func_map = self.key_function_mapping()
-        """
-        if the key pressed is the escape key, go back to the previous page.
-        if the current page is the game page, check if the key pressed is a letter.
-        if the key pressed is a letter, add it to the guess.
-        """
+
         if key == Qt.Key_Escape:
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
-        elif self.stacked_widget.currentIndex() == 3 and key in key_func_map:
+            return
+
+        if self.stacked_widget.currentIndex() != 3:
+            super().keyPressEvent(event)
+            return
+
+        key_func_map = self.key_function_mapping()
+
+        if key in key_func_map:
             func, key_name = key_func_map[key]
             func()
             if key_name is not None: 
@@ -302,18 +339,16 @@ class WordluxeGame(QMainWindow):
         self.get_random_word()
         self.stacked_widget.setCurrentIndex(3) # go to the game page
 
+    def get_random_word(self):
+        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
+        self.setup_game_page()
+
     def get_grid_row(self):
         difficulty_levels = {
             "Hard": 4,
             "Extreme": 3
         }
         self.max_guesses = difficulty_levels.get(self.difficulty, 6)
-       
-    def reset_game_state(self):
-        # initalizes the game state back to the default
-        self.board = []
-        self.num_guess = 0
-        self.guess = ""        
 
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
@@ -328,40 +363,6 @@ class WordluxeGame(QMainWindow):
     def show_answer(self):
         QMessageBox.information(self, "ANSWER",f"The correct answer is: {self.word}")
     
-    def check_guess(self):
-        guess = self.guess.lower()
-        word = self.word.lower()
-        self.guess_store += self.guess
-
-        if guess not in DICTIONARY or len(guess) != len(word):
-            self.highlight_incorrect_guess()
-            return
-
-        word_copy = list(word)
-        guess_copy = list(guess)
-
-        for i in range(len(word)):
-            if guess[i] == word[i]:
-                self.highlight_letter(i, "correct")
-                word_copy[word_copy.index(guess[i])] = "-"
-                guess_copy[i] = "-"
-                self.set_key_color(self.guess[i], "#6aaa64")
-
-        for i in range(len(guess_copy)):
-            if guess_copy[i] in word_copy and guess_copy[i] != "-":
-                self.highlight_letter(i, "present")
-                word_copy[word_copy.index(guess_copy[i])] = "-"
-                self.set_key_color(self.guess[i], "#c9b458")
-            elif guess_copy[i] != "-":
-                self.highlight_letter(i, "absent")
-                self.set_key_color(self.guess[i], "grey")
-
-        if self.num_guess == (self.max_guesses - 1) or word == guess:
-            self.show_answer()
-        else:
-            self.num_guess += 1
-            self.guess = ""
-    
     def highlight_letter(self, i, type):
         self.board[self.num_guess][i].setStyleSheet(self.set_label_color(LETTER_COLORS[type], "none"))
 
@@ -370,17 +371,13 @@ class WordluxeGame(QMainWindow):
             self.board[self.num_guess][i].setStyleSheet(self.set_label_color("#d03939", "none"))
         QTimer.singleShot(DELAY, self.reset_grid)
 
+    def set_label_color(self, color, border):
+        return f"QLabel {{font-family: Inter; font-weight: bold; color: black; background-color: {color}; font-size: 48px; border: {border};}}"
+
     def reset_grid(self):
         for i in range(len(self.word)):
             self.board[self.num_guess][i].setStyleSheet(self.set_label_color("transparent", "2px solid grey"))
             self.do_backspace()
-
-    def set_label_color(self, color, border):
-        return f"QLabel {{font-family: Inter; font-weight: bold; color: black; background-color: {color}; font-size: 48px; border: {border};}}"
-
-    def get_random_word(self):
-        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
-        self.setup_game_page()
         
     def create_frame(self, object_name):
         frame = QFrame(self.stacked_widget)
