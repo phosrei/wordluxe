@@ -4,6 +4,7 @@ from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
 from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 from config import *
 import random
 
@@ -18,6 +19,12 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
         self.showFullScreen()
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.timer_timeout)
+
+        self.timer_label = QLabel(self)
+        self.timer_label.setObjectName("timerLabel")
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.timer_timeout)
