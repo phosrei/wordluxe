@@ -60,6 +60,7 @@ GAME_LOGO_PATH = "assets/game_logo.svg"
 LETTER_ERASER_PATH = "assets/letter_eraser.svg"
 INVINCIBLE_PATH = "assets/invincible.svg"
 VOWEL_PATH = "assets/vowel.svg"
+COIN_PATH = "assets/coin_logo.svg"
 STYLE_FILE_PATH = 'style.qss'
 
 # Powerup dimensions

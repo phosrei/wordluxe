@@ -1,9 +1,25 @@
+#grid, #currency, #timerLabel, #key, #enterButton {
+    font-family: Inter;
+    font-weight: bold;
+}
+
 QPushButton {
+    font-family: Inter;
     background-color: #fff;
     border-radius: 32px;
     font-size: 20px;
     padding: 20px;
+}
+
+#failPrompt {
     font-family: Inter;
+    font-size: 18px;
+}
+
+#answer {
+    font-family: Inter;
+    font-weight: bold;
+    font-size: 24px;
 }
 
 QPushButton:focus, #extremeButton {
@@ -20,8 +36,6 @@ QPushButton:focus, #extremeButton {
     background-color: #b8bec1;
     padding: 20px;
     border-radius: 5px;
-    font-weight: bold;
-    font-family: Inter;
     color: white;
 }
 
@@ -38,20 +52,45 @@ QPushButton:focus, #extremeButton {
     color: #fff;
 }
 
+QDialog {
+    background; white;
+}
+
+#pgModalButton, #quitModalButton {
+    font-family: Inter;
+    color: white;
+    font-size: 16px;
+}
+
+#pgModalButton {
+    background: #141313;
+}
+
+#quitModalButton {
+    background: #9A3E3E;
+}
+
 #mmframe, #cframe, #dframe, #gframe {
     background-image:url(assets/background1.png);
 }
 
 #timerLabel {
     font-size: 60px; 
-    font-family: Inter;
     color: rgba(255, 255, 255, 0.1);
-    font-weight: bold;
-    } 
+    }
+
+#coinFrame {
+    border-radius: 24px;
+    border: 2px solid grey;
+    padding: 16px 0;
+}
+
+#currency {
+    font-size: 18px;
+    color: #C7CB27;
+}
 
 #grid {
-    font-family: Inter; 
-    font-weight: bold; 
     font-size: 48px; 
     color: black; 
     background-color: transparent; border: 2px solid grey;

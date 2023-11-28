@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon, QColor
+from PyQt5.QtGui import QIcon, QColor, QFont
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
 from config import *
@@ -51,7 +51,7 @@ class WordluxeGame(QMainWindow):
         main_buttons_layout.setAlignment(Qt.AlignCenter)
         # add buttons, style them, and add to the main menu frame
         for button_text, button_method, button_name in [("Play", self.play_button_pressed, "button"), ("Quit", self.quit_button_pressed, "quitButton")]:
-            button = self.create_button(button_text, main_menu_frame, button_method, button_name)
+            button = self.create_button(button_text, main_menu_frame, BUTTON_FIXED_WIDTH, button_method, button_name)
             main_buttons_layout.addWidget(button)
             main_buttons_layout.addSpacing(MAIN_BUTTONS_SPACING)
 
@@ -99,9 +99,10 @@ class WordluxeGame(QMainWindow):
 
         if self.difficulty != EXTREME_DIFFICULTY:
             self.add_powerups(self.game_frame)
+            self.add_currency_box(self.game_frame)
 
         self.stacked_widget.addWidget(self.game_frame)
-
+        
     def create_grid(self):
         self.grid_frame = self.create_frame("gridframe")
         self.grid_layout = QGridLayout()
@@ -137,6 +138,29 @@ class WordluxeGame(QMainWindow):
         grid_box.setObjectName("grid")
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
         return grid_box
+
+    def add_currency_box(self, parent):
+        coin_frame = QFrame(parent)
+        coin_frame.setObjectName("coinFrame")
+        coin_layout = QVBoxLayout(coin_frame)
+        coin_layout.setAlignment(Qt.AlignCenter)  # Add alignment to the layout
+
+        currency_logo = QSvgWidget(COIN_PATH)
+        currency_logo.setFixedSize(28, 28)
+        coin_layout.addWidget(currency_logo)
+        coin_layout.addSpacing(4)
+
+        currency = QLabel(str(20), coin_frame)
+        currency.setObjectName("currency")
+        coin_layout.addWidget(currency, alignment=Qt.AlignCenter)
+
+        coin_x = self.game_frame.width() // 2 - self.grid_frame.width() // 2 - coin_frame.width() + 20
+        coin_y = (self.game_frame.height() - coin_frame.height()) // 3
+        coin_frame.move(coin_x, coin_y)
+
+        coin_frame.adjustSize()
+
+        return coin_frame
 
     def add_powerups(self, parent):
         powerups_frame = QFrame(parent)
@@ -232,13 +256,54 @@ class WordluxeGame(QMainWindow):
                 self.highlight_letter(i, "absent")
                 self.set_key_color(self.guess[i], "grey")
 
-        if self.num_guess == (self.max_guesses - 1) or word == guess:
-            self.show_answer()
-        elif self.invincible_clicked:
+        if self.invincible_clicked:
             self.invincible_clicked = False
             self.invincible()
+
+        if self.num_guess == (self.max_guesses - 1):
+            self.fail_prompt()
+
         self.num_guess += 1
         self.guess = ""
+
+    def fail_prompt(self):
+        blur_effect = QGraphicsBlurEffect()
+        blur_effect.setBlurRadius(5)
+
+        self.setGraphicsEffect(blur_effect)
+
+        dialog = QDialog()
+        dialog.setWindowTitle("ANSWER")
+        dialog.setWindowIcon(QIcon(GAME_ICON_PATH))
+        dialog.setWindowFlags(Qt.FramelessWindowHint)
+
+        layout = QVBoxLayout()
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        for text, name in [("You failed to guess the word:", "failPrompt"), (self.word, "answer")]:
+            label = QLabel(text)
+            label.setObjectName(name)
+            label.setAlignment(Qt.AlignCenter)
+            layout.addWidget(label)
+            layout.addSpacing(10)
+
+        button_layout = QHBoxLayout()
+        for button_text, button_method, button_name in [("Try Again", self.play_again, "pgModalButton"), ("Quit", self.quit_game, "quitModalButton")]:
+            button = self.create_button(button_text, dialog, 130, button_method, button_name)
+            button.clicked.connect(dialog.accept)
+            button_layout.addWidget(button)
+
+        layout.addLayout(button_layout)
+        dialog.setLayout(layout)
+        dialog.exec_()
+
+        self.setGraphicsEffect(None)
+
+    def play_again(self):
+        ...
+
+    def quit_game(self):
+        self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 3)
     
     def create_keyboard(self):
         self.keyboard_buttons = {}
@@ -319,7 +384,7 @@ class WordluxeGame(QMainWindow):
             return {
                 Qt.Key_Return: (self.check_guess, "ENTER"),
                 Qt.Key_Backspace: (self.do_backspace, "⌫"),
-                Qt.Key_F3: (self.show_answer, None)
+                Qt.Key_F3: (self.fail_prompt, None)
             }
 
     def play_button_pressed(self):
@@ -388,9 +453,6 @@ class WordluxeGame(QMainWindow):
         if len(self.guess) > 0:
             self.guess = self.guess[:-1]
             self.board[self.num_guess][len(self.guess)].setText(" ")
-
-    def show_answer(self):
-        QMessageBox.information(self, "ANSWER",f"The correct answer is: {self.word}")
     
     def highlight_letter(self, i, type):
         self.board[self.num_guess][i].setStyleSheet(self.set_label_color(LETTER_COLORS[type], "none"))
@@ -414,9 +476,9 @@ class WordluxeGame(QMainWindow):
         frame.setObjectName(object_name)
         return frame
 
-    def create_button(self, text, parent, function, object_name="button"):
+    def create_button(self, text, parent, width, function, object_name="button"):
         button = QPushButton(text, parent, objectName=object_name)
-        button.setFixedWidth(BUTTON_FIXED_WIDTH)
+        button.setFixedWidth(width)
         button.clicked.connect(function)
         button.setCursor(Qt.PointingHandCursor)
         button.setDefault(True)
@@ -424,7 +486,7 @@ class WordluxeGame(QMainWindow):
 
     def create_buttons(self, layout, buttons, parent, function):
         for button_text in buttons:
-            button = self.create_button(button_text, parent, function)
+            button = self.create_button(button_text, parent, BUTTON_FIXED_WIDTH, function)
             if button_text == EXTREME_DIFFICULTY:
                 button.setObjectName("extremeButton")
             layout.addWidget(button)
