@@ -122,10 +122,11 @@ class WordluxeGame(QMainWindow):
         keyboard_frame.setLayout(keyboard_layout)
         game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter)
         # add powerups to the side of the grid
-        powerups_frame = self.create_powerups_frame(game_frame)
-        powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
-        powerup_y = (game_frame.height() - powerups_frame.height()) // 3
-        powerups_frame.move(powerup_x, powerup_y)
+        if self.difficulty.lower() != "extreme":
+            powerups_frame = self.create_powerups_frame(game_frame)
+            powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
+            powerup_y = (game_frame.height() - powerups_frame.height()) // 3
+            powerups_frame.move(powerup_x, powerup_y)
 
         self.stacked_widget.addWidget(game_frame)
 
