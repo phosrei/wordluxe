@@ -1,10 +1,22 @@
+import os
 import sys
+import json
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor, QFont
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
 from config import *
 import random
+
+def load_currency():
+    with open(CURRENCY_FILE_PATH, 'r') as f:
+        return json.load(f)
+
+def save_currency(currency):
+    with open(CURRENCY_FILE_PATH, 'w') as f:
+        json.dump(currency, f)
+
+currency = load_currency()
 
 class WordluxeGame(QMainWindow):
     # initialize the game
@@ -91,15 +103,19 @@ class WordluxeGame(QMainWindow):
         game_layout = QVBoxLayout(self.game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
 
+        #add grid to the game page
+        game_layout.addWidget(self.create_grid(), alignment=Qt.AlignCenter)
+
+        # if the difficulty is extreme, add the timer to the game page
+        # else add the powerups and currency box to the game page
         if self.difficulty == EXTREME_DIFFICULTY:
             game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
-
-        game_layout.addWidget(self.create_grid(), alignment=Qt.AlignCenter)
-        game_layout.addWidget(self.create_keyboard(), alignment=Qt.AlignCenter)
-
-        if self.difficulty != EXTREME_DIFFICULTY:
+        else:
             self.add_powerups(self.game_frame)
             self.add_currency_box(self.game_frame)
+
+        # add keyboard to the game page
+        game_layout.addWidget(self.create_keyboard(), alignment=Qt.AlignCenter)
 
         self.stacked_widget.addWidget(self.game_frame)
         
@@ -150,9 +166,9 @@ class WordluxeGame(QMainWindow):
         coin_layout.addWidget(currency_logo)
         coin_layout.addSpacing(4)
 
-        currency = QLabel(str(20), coin_frame)
-        currency.setObjectName("currency")
-        coin_layout.addWidget(currency, alignment=Qt.AlignCenter)
+        self.currency_value = QLabel(str(currency['value']), coin_frame)
+        self.currency_value.setObjectName("currency")
+        coin_layout.addWidget(self.currency_value, alignment=Qt.AlignCenter)
 
         coin_x = self.game_frame.width() // 2 - self.grid_frame.width() // 2 - coin_frame.width() + 20
         coin_y = (self.game_frame.height() - coin_frame.height()) // 3
@@ -190,25 +206,46 @@ class WordluxeGame(QMainWindow):
     def on_powerup_clicked(self):
         clicked_button = self.sender()
         powerup_actions = {
-            LETTER_ERASER_PATH: self.letter_eraser,
-            INVINCIBLE_PATH: self.invincible,
-            VOWEL_PATH: self.reveal_vowel
+            self.powerup_buttons[LETTER_ERASER_PATH]: self.check_letter_eraser_powerup,
+            self.powerup_buttons[VOWEL_PATH]: self.check_reveal_vowel_powerup,
+            self.powerup_buttons[INVINCIBLE_PATH]: self.check_invincible_powerup
         }
-        for powerup_path, button in self.powerup_buttons.items():
-            if clicked_button is button:
-                if powerup_path == INVINCIBLE_PATH:
-                    self.invincible_clicked = True
-                else:
-                    powerup_actions[powerup_path]()
+        function = powerup_actions.get(clicked_button)
+        if function:
+            function()
 
-    def letter_eraser(self):
+    def check_reveal_vowel_powerup(self):
+        if currency['value'] >= 3:
+            currency['value'] -= 3
+            self.update_currency()
+            self.reveal_vowel_powerup()
+        else:
+            return
+
+    def check_letter_eraser_powerup(self):
+        if currency['value'] >= 1:
+            currency['value'] -= 1
+            self.update_currency()
+            self.letter_eraser_powerup()
+        else:
+            return
+        
+    def check_invincible_powerup(self):
+        if currency['value'] >= 2:
+            currency['value'] -= 2
+            self.update_currency()
+            self.invincible_clicked = True
+        else:
+            return
+        
+    def letter_eraser_powerup(self):
         remaining_letters = set(ALPHABET) - set(self.guess_store) - set(self.word)
         if remaining_letters:
             random_char = random.choice(list(remaining_letters))
             self.set_key_color(random_char, "grey")
             self.guess_store += random_char
 
-    def invincible(self):
+    def invincible_powerup(self):
         row_labels = []
         for col in range(len(self.word)):
             grid_box = self.create_grid_box(self.grid_frame)
@@ -219,7 +256,7 @@ class WordluxeGame(QMainWindow):
         grid_frame_height = self.max_guesses * (BOX_HEIGHT + GAP_SIZE)
         self.grid_frame.setFixedSize(self.grid_frame_width, grid_frame_height)
 
-    def reveal_vowel(self):
+    def reveal_vowel_powerup(self):
         remaining_vowels = set(VOWELS) - set(self.guess_store)
         remaining_vowels_in_word = [vowel for vowel in remaining_vowels if vowel in self.word]
 
@@ -256,17 +293,37 @@ class WordluxeGame(QMainWindow):
                 self.highlight_letter(i, "absent")
                 self.set_key_color(self.guess[i], "grey")
 
-        if self.invincible_clicked:
-            self.invincible_clicked = False
-            self.invincible()
-
-        if self.num_guess == (self.max_guesses - 1):
-            self.fail_prompt()
-
         self.num_guess += 1
+
+        if self.invincible_clicked:
+            self.invincible_powerup()
+            self.invincible_clicked = False
+
+        if self.num_guess == self.max_guesses:
+            self.show_prompt("You failed to guess the word:")
+        elif guess == word:
+            self.reward_coins()
+            self.show_prompt("You guessed the word:")
+
         self.guess = ""
 
-    def fail_prompt(self):
+    def reward_coins(self):
+        if  self.difficulty == EXTREME_DIFFICULTY:
+            currency['value'] += 10
+        elif self.num_guess <= 2:
+            currency['value'] += 3
+        elif self.num_guess <= 4:
+            currency['value'] += 2
+        else:
+            currency['value'] += 1
+
+        self.update_currency()
+
+    def update_currency(self):
+        self.currency_value.setText(str(currency['value']))
+        save_currency(currency)
+
+    def show_prompt(self,text="The word is:"):
         blur_effect = QGraphicsBlurEffect()
         blur_effect.setBlurRadius(5)
 
@@ -280,15 +337,15 @@ class WordluxeGame(QMainWindow):
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 20, 20, 20)
 
-        for text, name in [("You failed to guess the word:", "failPrompt"), (self.word, "answer")]:
-            label = QLabel(text)
+        for message, name in [(text, "failPrompt"), (self.word, "answer")]:
+            label = QLabel(message)
             label.setObjectName(name)
             label.setAlignment(Qt.AlignCenter)
             layout.addWidget(label)
             layout.addSpacing(10)
 
         button_layout = QHBoxLayout()
-        for button_text, button_method, button_name in [("Try Again", self.play_again, "pgModalButton"), ("Quit", self.quit_game, "quitModalButton")]:
+        for button_text, button_method, button_name in [("Try Again", self.try_again, "tgModalButton"), ("Main Menu", self.quit_game, "mmModalButton")]:
             button = self.create_button(button_text, dialog, 130, button_method, button_name)
             button.clicked.connect(dialog.accept)
             button_layout.addWidget(button)
@@ -299,8 +356,10 @@ class WordluxeGame(QMainWindow):
 
         self.setGraphicsEffect(None)
 
-    def play_again(self):
-        ...
+    def try_again(self):
+        self.stacked_widget.removeWidget(self.game_frame)
+        self.get_random_word()
+        self.stacked_widget.setCurrentWidget(self.game_frame)      
 
     def quit_game(self):
         self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 3)
@@ -384,7 +443,7 @@ class WordluxeGame(QMainWindow):
             return {
                 Qt.Key_Return: (self.check_guess, "ENTER"),
                 Qt.Key_Backspace: (self.do_backspace, "⌫"),
-                Qt.Key_F3: (self.fail_prompt, None)
+                Qt.Key_F3: (self.show_prompt, None)
             }
 
     def play_button_pressed(self):

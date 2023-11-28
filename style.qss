@@ -56,18 +56,18 @@ QDialog {
     background; white;
 }
 
-#pgModalButton, #quitModalButton {
+#tgModalButton, #mmModalButton {
     font-family: Inter;
     color: white;
     font-size: 16px;
 }
 
-#pgModalButton {
+#tgModalButton {
     background: #141313;
 }
 
-#quitModalButton {
-    background: #9A3E3E;
+#mmModalButton {
+    background: #d03939;
 }
 
 #mmframe, #cframe, #dframe, #gframe {
@@ -101,29 +101,24 @@ QDialog {
     background-color: transparent;
     color: #fff;
 }
- 
+
 #powerupButton {
     background: transparent;
 }
 
-#button:hover, #button:focus {
+#button:hover{
     background-color: #e6e6e6;
 }
 
-#extremeButton:hover {
-    background-color: #8f3939;
+#tgModalButton:hover {
+    background-color: black;
 }
 
-#extremeButton:focus {
+#extremeButton:hover, #mmModalButton:hover {
     background-color: #8f3939;
 }
 
 #quitButton:hover {
-    border: 2px solid #b3b3b3;
-    color: #b3b3b3
-}
-
-#quitButton:focus {
     border: 2px solid #b3b3b3;
     color: #b3b3b3
 }

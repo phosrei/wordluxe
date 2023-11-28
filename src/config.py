@@ -55,6 +55,7 @@ HEADING_SPACING = 60
 ICON_SPACING = 10
 
 # File paths
+CURRENCY_FILE_PATH = 'src/currency.json'
 GAME_ICON_PATH = "assets/game_icon.ico"
 GAME_LOGO_PATH = "assets/game_logo.svg"
 LETTER_ERASER_PATH = "assets/letter_eraser.svg"
