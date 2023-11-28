@@ -34,7 +34,7 @@ QPushButton:focus, #extremeButton {
 }
 
 #extremeButton {
-    background-color: #D03939;
+    background-color: #d03939;
     color: #fff;
 }
 
@@ -45,7 +45,7 @@ QPushButton:focus, #extremeButton {
 #timerLabel {
     font-size: 60px; 
     font-family: Inter; 
-    color: white; 
+    color: rgba(255, 255, 255, 0.1);
     font-weight: bold;
     } 
 

@@ -3,8 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
-from datetime import datetime, timedelta
-from datetime import datetime, timedelta
 from config import *
 import random
 
@@ -101,7 +99,7 @@ class WordluxeGame(QMainWindow):
         game_layout.setAlignment(Qt.AlignCenter)
         game_frame.setLayout(game_layout)
 
-        if self.difficulty.lower() == "extreme":
+        if self.difficulty == EXTREME_DIFFICULTY:
             self.timer_label = QLabel("03:00", game_frame)
             self.timer_label.setObjectName("timerLabel")
             self.timer_label.setFixedSize(200, 100)
@@ -110,7 +108,7 @@ class WordluxeGame(QMainWindow):
 
             # set the position of the timer label
             timer_label_x = game_frame.width() // 2 - self.timer_label.width() // 2
-            timer_label_y = 150
+            timer_label_y = int(game_frame.height() * 0.15)
             self.timer_label.move(timer_label_x, timer_label_y)
 
         # create the grid and add to the game frame 
@@ -121,8 +119,9 @@ class WordluxeGame(QMainWindow):
         keyboard_layout = self.create_keyboard_layout()
         keyboard_frame.setLayout(keyboard_layout)
         game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter)
+        
         # add powerups to the side of the grid
-        if self.difficulty.lower() != "extreme":
+        if self.difficulty != EXTREME_DIFFICULTY:
             powerups_frame = self.create_powerups_frame(game_frame)
             powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
             powerup_y = (game_frame.height() - powerups_frame.height()) // 3
@@ -261,7 +260,6 @@ class WordluxeGame(QMainWindow):
             self.invincible()
         self.num_guess += 1
         self.guess = ""
-
 
     def page_template(self, frame_name, text, buttons, function):
         # a page template for both the category and difficulty pages
@@ -403,6 +401,8 @@ class WordluxeGame(QMainWindow):
         self.update_timer_label()
 
     def update_timer_label(self):
+        if self.remaining_time == 10:
+            self.timer_label.setStyleSheet("QLabel { color: #d03939; }")
         minutes = self.remaining_time // 60
         seconds = self.remaining_time % 60
         self.timer_label.setText(f"{minutes:02d}:{seconds:02d}")
