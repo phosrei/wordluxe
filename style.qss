@@ -44,7 +44,7 @@ QPushButton:focus, #extremeButton {
 
 #timerLabel {
     font-size: 60px; 
-    font-family: Inter; 
+    font-family: Inter;
     color: rgba(255, 255, 255, 0.1);
     font-weight: bold;
     } 

@@ -24,12 +24,6 @@ class WordluxeGame(QMainWindow):
         self.timer_label = QLabel(self)
         self.timer_label.setObjectName("timerLabel")
 
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.timer_timeout)
-
-        self.timer_label = QLabel(self)
-        self.timer_label.setObjectName("timerLabel")
-
         # set the styling of the window and widgets
         with open(STYLE_FILE_PATH, "r") as f:
             QApplication.instance().setStyleSheet(f.read())
@@ -93,41 +87,20 @@ class WordluxeGame(QMainWindow):
         self.create_buttons(layout, buttons, frame, function)
 
     def setup_game_page(self):
-        # create the game frame
-        game_frame = self.create_frame("gframe")
-        game_layout = QVBoxLayout(game_frame)
+        self.game_frame = self.create_frame("gframe")
+        game_layout = QVBoxLayout(self.game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
-        game_frame.setLayout(game_layout)
 
         if self.difficulty == EXTREME_DIFFICULTY:
-            self.timer_label = QLabel("03:00", game_frame)
-            self.timer_label.setObjectName("timerLabel")
-            self.timer_label.setFixedSize(200, 100)
-            self.timer_label.setAlignment(Qt.AlignCenter)
-            self.timer_label.setStyleSheet("QLabel { font-size: 60px; }")
+            game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
 
-            # set the position of the timer label
-            timer_label_x = game_frame.width() // 2 - self.timer_label.width() // 2
-            timer_label_y = int(game_frame.height() * 0.15)
-            self.timer_label.move(timer_label_x, timer_label_y)
+        game_layout.addWidget(self.create_grid(), alignment=Qt.AlignCenter)
+        game_layout.addWidget(self.create_keyboard(), alignment=Qt.AlignCenter)
 
-        # create the grid and add to the game frame 
-        grid_frame = self.create_grid()
-        game_layout.addWidget(grid_frame, alignment=Qt.AlignCenter)
-        # create an on-screen keyboard
-        keyboard_frame = QFrame()
-        keyboard_layout = self.create_keyboard_layout()
-        keyboard_frame.setLayout(keyboard_layout)
-        game_layout.addWidget(keyboard_frame, alignment=Qt.AlignCenter)
-        
-        # add powerups to the side of the grid
         if self.difficulty != EXTREME_DIFFICULTY:
-            powerups_frame = self.create_powerups_frame(game_frame)
-            powerup_x = game_frame.width() // 2 + grid_frame.width() // 2
-            powerup_y = (game_frame.height() - powerups_frame.height()) // 3
-            powerups_frame.move(powerup_x, powerup_y)
+            self.add_powerups(self.game_frame)
 
-        self.stacked_widget.addWidget(game_frame)
+        self.stacked_widget.addWidget(self.game_frame)
 
     def create_grid(self):
         self.grid_frame = self.create_frame("gridframe")
@@ -165,21 +138,27 @@ class WordluxeGame(QMainWindow):
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
         return grid_box
 
-    def create_powerups_frame(self, parent):
+    def add_powerups(self, parent):
         powerups_frame = QFrame(parent)
-        powerups_layout = QVBoxLayout()
-        powerups_frame.setLayout(powerups_layout)
-        self.powerup_buttons = {}  # Store the powerup buttons
+        powerups_layout = QVBoxLayout(powerups_frame)
+        self.powerup_buttons = {}
+
         for powerups in [LETTER_ERASER_PATH, INVINCIBLE_PATH, VOWEL_PATH]:
-            powerup = QToolButton(powerups_frame)
-            powerup.setCursor(Qt.PointingHandCursor)
-            powerup.setIcon(QIcon(powerups))
-            powerup.setObjectName("powerupButton")
-            powerup.setIconSize(QSize(ICON_WIDTH, ICON_HEIGHT))
+
+            powerup = QToolButton(powerups_frame,
+                cursor=Qt.PointingHandCursor,
+                icon=QIcon(powerups),
+                objectName="powerupButton",
+                iconSize=QSize(ICON_WIDTH, ICON_HEIGHT))
+
             powerup.clicked.connect(self.on_powerup_clicked)
             powerups_layout.addWidget(powerup)
             powerups_layout.addSpacing(ICON_SPACING)
-            self.powerup_buttons[powerups] = powerup  # Add the button to the dictionary
+            self.powerup_buttons[powerups] = powerup
+
+        powerup_x = self.game_frame.width() // 2 + self.grid_frame.width() // 2
+        powerup_y = (self.game_frame.height() - powerups_frame.height()) // 4
+        powerups_frame.move(powerup_x, powerup_y)
         powerups_frame.adjustSize()
 
         return powerups_frame
@@ -260,26 +239,11 @@ class WordluxeGame(QMainWindow):
             self.invincible()
         self.num_guess += 1
         self.guess = ""
-
-    def page_template(self, frame_name, text, buttons, function):
-        # a page template for both the category and difficulty pages
-        frame = self.create_frame(frame_name)
-        self.stacked_widget.addWidget(frame)
-
-        layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignCenter)
-
-        label = QLabel(text, frame)
-        label.setObjectName("heading")
-        label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(label)
-        layout.addSpacing(HEADING_SPACING)
-
-        self.create_buttons(layout, buttons, frame, function)
     
-    def create_keyboard_layout(self):
+    def create_keyboard(self):
         self.keyboard_buttons = {}
-        keyboard_layout = QVBoxLayout()
+        self.keyboard_frame = self.create_frame("keyboardFrame")
+        keyboard_layout = QVBoxLayout(self.keyboard_frame)
 
         for row in KEYBOARD:
             row_layout = QHBoxLayout()
@@ -292,7 +256,7 @@ class WordluxeGame(QMainWindow):
 
             keyboard_layout.addLayout(row_layout)
 
-        return keyboard_layout
+        return self.keyboard_frame
 
     def create_key(self, key):
         button = QPushButton(key)
@@ -413,13 +377,7 @@ class WordluxeGame(QMainWindow):
 
         if self.remaining_time <= 0:
             self.timer.stop()
-            self.show_answer()
-       
-    def reset_game_state(self):
-        # initalizes the game state back to the default
-        self.board = []
-        self.num_guess = 0
-        self.guess = ""        
+            self.show_answer()  
 
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
