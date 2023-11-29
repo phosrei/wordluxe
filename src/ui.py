@@ -30,12 +30,6 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
 
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.timer_timeout)
-
-        self.timer_label = QLabel(self)
-        self.timer_label.setObjectName("timerLabel")
-
         # set the styling of the window and widgets
         with open(STYLE_FILE_PATH, "r") as f:
             QApplication.instance().setStyleSheet(f.read())
