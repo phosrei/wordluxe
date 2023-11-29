@@ -322,7 +322,8 @@ class WordluxeGame(QMainWindow):
         if self.num_guess == self.max_guesses:
             self.show_prompt("You failed to guess the word:")
         elif guess == word:
-            self.reward_coins()
+            if self.difficulty != EXTREME_DIFFICULTY:
+                self.reward_coins()
             self.show_prompt("You guessed the word:")
 
         self.guess = ""
@@ -493,7 +494,8 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.setCurrentIndex(3) # go to the game page
 
     def get_random_word(self):
-        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
+        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper()
+        print(self.word)
         self.setup_game_page()
 
     def get_grid_row(self):
