@@ -63,6 +63,8 @@ class WordluxeGame(QMainWindow):
 
         main_layout.addLayout(main_buttons_layout)
 
+        self.difficulty = ""
+
         """
         the line of code below adds the main menu frame to the stacked widget.
         The stacked_widget is a container that can hold and manage multiple widgets, 
@@ -103,7 +105,7 @@ class WordluxeGame(QMainWindow):
             game_layout.addWidget(self.setup_timer(), alignment=Qt.AlignCenter)
         else:
             self.add_powerups(self.game_frame)
-            self.add_currency_box(self.game_frame)
+            self.add_currency_display(self.game_frame)
 
         game_layout.addWidget(self.create_keyboard(), alignment=Qt.AlignCenter)
 
@@ -175,7 +177,7 @@ class WordluxeGame(QMainWindow):
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
         return grid_box
 
-    def add_currency_box(self, parent):
+    def add_currency_display(self, parent):
         coin_frame = QFrame(parent)
         coin_frame.setObjectName("coinFrame")
         coin_layout = QVBoxLayout(coin_frame)
@@ -440,7 +442,8 @@ class WordluxeGame(QMainWindow):
         key = event.key()
 
         if key == Qt.Key_Escape:
-            self.timer.stop()
+            if self.difficulty == EXTREME_DIFFICULTY:
+                self.timer.stop()
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
             return
 
