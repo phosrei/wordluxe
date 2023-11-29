@@ -1,12 +1,13 @@
 import os
 import sys
 import json
+import random
+import pycountry
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon, QColor, QFont
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
 from config import *
-import random
 
 def load_currency():
     with open(CURRENCY_FILE_PATH, 'r') as f:
@@ -63,8 +64,6 @@ class WordluxeGame(QMainWindow):
 
         main_layout.addLayout(main_buttons_layout)
 
-        self.difficulty = ""
-
         """
         the line of code below adds the main menu frame to the stacked widget.
         The stacked_widget is a container that can hold and manage multiple widgets, 
@@ -105,7 +104,6 @@ class WordluxeGame(QMainWindow):
             game_layout.addWidget(self.setup_timer(), alignment=Qt.AlignCenter)
         else:
             self.add_powerups(self.game_frame)
-            self.add_currency_display(self.game_frame)
 
         game_layout.addWidget(self.create_keyboard(), alignment=Qt.AlignCenter)
 
@@ -114,6 +112,7 @@ class WordluxeGame(QMainWindow):
     def setup_timer(self):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.timer_timeout)
+        self.timer.setInterval(1000)
         self.timer_label = QLabel(self)
         self.timer_label.setObjectName("timerLabel")
 
@@ -122,8 +121,8 @@ class WordluxeGame(QMainWindow):
         return self.timer_label
     
     def start_timer(self):
-        self.remaining_time = 180  # 3 minutes in seconds
-        self.timer.start(1000)  # Timer updates every 1 second
+        self.remaining_time = 180
+        self.timer.start(1000)
         self.update_timer_label()
 
     def update_timer_label(self):
@@ -139,7 +138,8 @@ class WordluxeGame(QMainWindow):
 
         if self.remaining_time <= 0:
             self.timer.stop()
-            self.show_prompt()
+            self.show_prompt()  
+
 
     def create_grid(self):
         self.grid_frame = self.create_frame("gridframe")
@@ -177,7 +177,7 @@ class WordluxeGame(QMainWindow):
         grid_box.setFixedSize(BOX_WIDTH, BOX_HEIGHT)
         return grid_box
 
-    def add_currency_display(self, parent):
+    def add_currency_box(self, parent):
         coin_frame = QFrame(parent)
         coin_frame.setObjectName("coinFrame")
         coin_layout = QVBoxLayout(coin_frame)
@@ -292,7 +292,16 @@ class WordluxeGame(QMainWindow):
         word = self.word.lower()
         self.guess_store += self.guess
 
-        if guess not in DICTIONARY or len(guess) != len(word):
+        if self.category.lower() not in ["songs", "artists", "sports", "countries"]:
+            if guess not in DICTIONARY:
+                self.highlight_incorrect_guess()
+                return
+        elif self.category.lower() == "countries":
+            if pycountry.countries.get(name=guess) is None:
+                self.highlight_incorrect_guess()
+                return
+            
+        if len(guess) != len(word):
             self.highlight_incorrect_guess()
             return
 
@@ -324,7 +333,7 @@ class WordluxeGame(QMainWindow):
         if self.num_guess == self.max_guesses:
             self.show_prompt("You failed to guess the word:")
         elif guess == word:
-            if self.difficulty != EXTREME_DIFFICULTY:
+            if self.difficulty != "Easy":
                 self.reward_coins()
             self.show_prompt("You guessed the word:")
 
@@ -442,8 +451,7 @@ class WordluxeGame(QMainWindow):
         key = event.key()
 
         if key == Qt.Key_Escape:
-            if self.difficulty == EXTREME_DIFFICULTY:
-                self.timer.stop()
+            self.timer.stop()
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
             return
 
@@ -464,6 +472,7 @@ class WordluxeGame(QMainWindow):
             self.simulate_key_press(self.keyboard_buttons[letter])
         else:
             super().keyPressEvent(event)
+
 
     def key_function_mapping(self):
         if self.stacked_widget.currentIndex() == 3:
@@ -497,8 +506,7 @@ class WordluxeGame(QMainWindow):
         self.stacked_widget.setCurrentIndex(3) # go to the game page
 
     def get_random_word(self):
-        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper()
-        print(self.word)
+        self.word = random.choice(list(WORDLIST_CAT[self.category.lower()][self.difficulty.lower()])).upper() 
         self.setup_game_page()
 
     def get_grid_row(self):
