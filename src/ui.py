@@ -337,7 +337,11 @@ class WordluxeGame(QMainWindow):
         elif guess == word:
             if self.difficulty != "Easy":
                 self.reward_coins()
-            self.show_prompt("You guessed the word:")
+            
+            if self.difficulty != "Easy":
+                self.show_prompt("You guessed the word:")
+            else:
+                self.show_prompt("You guessed the word:\n(No coins are rewarded in Easy mode.)")
 
         self.guess = ""
 
