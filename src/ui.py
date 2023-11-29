@@ -137,8 +137,7 @@ class WordluxeGame(QMainWindow):
 
         if self.remaining_time <= 0:
             self.timer.stop()
-            self.show_prompt()  
-
+            self.show_prompt()
 
     def create_grid(self):
         self.grid_frame = self.create_frame("gridframe")
@@ -440,6 +439,7 @@ class WordluxeGame(QMainWindow):
         key = event.key()
 
         if key == Qt.Key_Escape:
+            self.timer.stop()
             self.stacked_widget.setCurrentIndex(self.stacked_widget.currentIndex() - 1)
             return
 
