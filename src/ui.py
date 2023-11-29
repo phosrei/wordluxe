@@ -25,10 +25,10 @@ class WordluxeGame(QMainWindow):
 
         self.setWindowTitle("Wordluxe")
         self.setWindowIcon(QIcon(GAME_ICON_PATH))
+        self.showFullScreen()
 
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
-        self.showFullScreen()
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.timer_timeout)
@@ -103,22 +103,49 @@ class WordluxeGame(QMainWindow):
         game_layout = QVBoxLayout(self.game_frame)
         game_layout.setAlignment(Qt.AlignCenter)
 
-        #add grid to the game page
         game_layout.addWidget(self.create_grid(), alignment=Qt.AlignCenter)
 
-        # if the difficulty is extreme, add the timer to the game page
-        # else add the powerups and currency box to the game page
         if self.difficulty == EXTREME_DIFFICULTY:
-            game_layout.addWidget(self.timer_label, alignment=Qt.AlignCenter)
+            game_layout.addWidget(self.setup_timer(), alignment=Qt.AlignCenter)
         else:
             self.add_powerups(self.game_frame)
             self.add_currency_box(self.game_frame)
 
-        # add keyboard to the game page
         game_layout.addWidget(self.create_keyboard(), alignment=Qt.AlignCenter)
 
         self.stacked_widget.addWidget(self.game_frame)
-        
+
+    def setup_timer(self):
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.timer_timeout)
+        self.timer_label = QLabel(self)
+        self.timer_label.setObjectName("timerLabel")
+
+        self.start_timer()
+
+        return self.timer_label
+    
+    def start_timer(self):
+        self.remaining_time = 180  # 3 minutes in seconds
+        self.timer.start(1000)  # Timer updates every 1 second
+        self.update_timer_label()
+
+    def update_timer_label(self):
+        if self.remaining_time == 10:
+            self.timer_label.setStyleSheet("QLabel { color: #d03939; }")
+        minutes = self.remaining_time // 60
+        seconds = self.remaining_time % 60
+        self.timer_label.setText(f"{minutes:02d}:{seconds:02d}")
+
+    def timer_timeout(self):
+        self.remaining_time -= 1
+        self.update_timer_label()
+
+        if self.remaining_time <= 0:
+            self.timer.stop()
+            self.show_prompt()  
+
+
     def create_grid(self):
         self.grid_frame = self.create_frame("gridframe")
         self.grid_layout = QGridLayout()
@@ -334,6 +361,8 @@ class WordluxeGame(QMainWindow):
         dialog.setWindowIcon(QIcon(GAME_ICON_PATH))
         dialog.setWindowFlags(Qt.FramelessWindowHint)
 
+        dialog.reject = lambda: None
+
         layout = QVBoxLayout()
         layout.setContentsMargins(20, 20, 20, 20)
 
@@ -463,9 +492,6 @@ class WordluxeGame(QMainWindow):
     def dif_buttons_pressed(self):
         self.difficulty = self.sender().text()
         self.get_grid_row()
-
-        if self.difficulty == EXTREME_DIFFICULTY:
-            self.start_timer()
         
         if self.stacked_widget.count() > 3:
             self.stacked_widget.removeWidget(self.stacked_widget.widget(3))
@@ -482,26 +508,6 @@ class WordluxeGame(QMainWindow):
             "Extreme": 3
         }
         self.max_guesses = difficulty_levels.get(self.difficulty, 6)
-
-    def start_timer(self):
-        self.remaining_time = 180  # 3 minutes in seconds
-        self.timer.start(1000)  # Timer updates every 1 second
-        self.update_timer_label()
-
-    def update_timer_label(self):
-        if self.remaining_time == 10:
-            self.timer_label.setStyleSheet("QLabel { color: #d03939; }")
-        minutes = self.remaining_time // 60
-        seconds = self.remaining_time % 60
-        self.timer_label.setText(f"{minutes:02d}:{seconds:02d}")
-
-    def timer_timeout(self):
-        self.remaining_time -= 1
-        self.update_timer_label()
-
-        if self.remaining_time <= 0:
-            self.timer.stop()
-            self.show_answer()  
 
     def add_letter(self, key):
         if len(self.guess) < len(self.word):
