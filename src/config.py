@@ -4,6 +4,7 @@ import string
 
 # Dictionary
 DICTIONARY = set(words.words())
+ARTISTSDICT = artistslist.artists_list
 
 # Dictionary mapping
 WORDLIST_CAT = {
