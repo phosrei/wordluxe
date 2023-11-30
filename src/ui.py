@@ -4,7 +4,7 @@ import json
 import random
 import pycountry
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon, QColor, QFont
+from PyQt5.QtGui import QIcon, QColor
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtCore import Qt, QTimer, QSize
 from config import *

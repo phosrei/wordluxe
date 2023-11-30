@@ -1,5 +1,6 @@
 from nltk.corpus import words
 from wordlist import categories
+import artistslist
 import string
 
 # Dictionary
