@@ -401,6 +401,8 @@ class WordluxeGame(QMainWindow):
         self.setGraphicsEffect(None)
 
     def try_again(self):
+        self.timer.stop()
+        self.stacked_widget.setCurrentWidget(self.game_frame)
         self.stacked_widget.removeWidget(self.game_frame)
         self.get_random_word()
         self.stacked_widget.setCurrentWidget(self.game_frame)      
