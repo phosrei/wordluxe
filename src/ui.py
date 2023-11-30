@@ -294,12 +294,16 @@ class WordluxeGame(QMainWindow):
         word = self.word.lower()
         self.guess_store += self.guess
 
-        if self.category.lower() not in ["songs", "artists", "sports", "countries"]:
+        if self.category.lower() not in ["artists", "countries"]:
             if guess not in DICTIONARY:
                 self.highlight_incorrect_guess()
                 return
         elif self.category.lower() == "countries":
             if pycountry.countries.get(name=guess) is None:
+                self.highlight_incorrect_guess()
+                return
+        elif self.category.lower() == "artists":
+            if guess not in ARTISTSDICT:
                 self.highlight_incorrect_guess()
                 return
             
